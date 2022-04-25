@@ -19,8 +19,12 @@ typealias OnPlayerReady = () -> Void
 
 class MSVideoListCell: UICollectionViewCell {
     
-    private var container: UIView = UIView()
+    var playerView: MSPlayView = MSPlayView()
     
+    var videoModel: MSVideoModel!
+    
+    private var container: UIView = UIView()
+
     private lazy var gradientLayer: CAGradientLayer = {
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [ColorClear.cgColor, ColorBlackAlpha20.cgColor, ColorBlackAlpha40.cgColor]
@@ -51,10 +55,6 @@ class MSVideoListCell: UICollectionViewCell {
     private var lastTapTime: TimeInterval = 0
     
     private var lastTapPoint: CGPoint = .zero
-    
-    private var videoModel: MSVideoModel?
-    
-    private var playerView: MSPlayView = MSPlayView()
     
     private var musicName: CircleTextView = CircleTextView()
     
@@ -164,12 +164,12 @@ class MSVideoListCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         isPlayerReady = false
-//        playerView.cancelLoading()
+        playerView.bgImageView.isHidden = false
         pauseIcon.isHidden = true
         
         avatarIcon.image = UIImage(named: "img_find_default")
         
-        musicAlum.resetView()
+//        musicAlum.resetView()
         favorite.resetView()
         focus.resetView()
     }
@@ -182,12 +182,23 @@ class MSVideoListCell: UICollectionViewCell {
         favoriteNum.text = String.formatCount(count: 58)
         commentNum.text = String.formatCount(count: 12)
         shareNum.text = String.formatCount(count: 66)
+        self.playerView.bgImageView.kf.setImage(with: URL(string: model.basicInfo.coverUrl))
+    }
+    
+    func updateProgress(progress: Float) {
+        
+    }
+    
+    func playStatusChanged(to status: MSVideoPlayerStatus) {
 
+        self.playerView.bgImageView.isHidden = status != .prepared
+        self.pauseIcon.isHidden = (status == .playing || status == .loading)
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
         container.frame = self.bounds
+        playerView.frame = self.bounds
         pauseIcon.frame = CGRect(x: self.bounds.midX - 50, y: self.bounds.midY - 50, width: 100, height: 100)
         
         CATransaction.begin()

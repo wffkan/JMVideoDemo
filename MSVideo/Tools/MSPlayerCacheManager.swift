@@ -14,7 +14,7 @@ class MSPlayerCacheManager: NSObject {
     
     private override init() {}
     
-    var playerCacheCount: Int = 0
+    var playerCacheCount: Int = 3
     
     private var playerCacheDic: [String: MSVideoPlayer] = [:]
     
