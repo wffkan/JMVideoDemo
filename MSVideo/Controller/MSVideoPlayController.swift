@@ -23,6 +23,7 @@ class MSVideoPlayController: BFBaseViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.isPagingEnabled = true
+        collectionView.bounces = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.contentInsetAdjustmentBehavior = .never
         collectionView.backgroundColor = .clear
@@ -96,7 +97,9 @@ class MSVideoPlayController: BFBaseViewController {
         self.currentPlaingCell = self.collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? MSVideoListCell
         // 重新播放
         if let cell = self.currentPlaingCell {
+            self.currentPlayer?.isAutoPlay = true
             self.currentPlayer?.playVideo(in: cell.playerView, url: cell.videoModel.streamingInfo.plainOutput.url)
+            self.currentPlayer?.bitrateIndex = cell.videoModel.basicInfo.bitrateIndex
         }
     }
     
@@ -126,17 +129,26 @@ extension MSVideoPlayController: UICollectionViewDataSource,UICollectionViewDele
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "videoCell", for: indexPath) as! MSVideoListCell
         cell.reloadData(model: datas[indexPath.row])
+        cell.delegate = self
         return cell
     }
 
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
 //        let offsetY = scrollView.contentOffset.y
 //        let currentIndex = offsetY / UIScreen.height
 //        print("index: %zd",currentIndex)
-//    }
+//        self.startPlayVideo(index: currentIndex)
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let currentIndex = Int(offsetY / UIScreen.height)
+        print("index: %zd",currentIndex)
+        self.startPlayVideo(index: currentIndex)
+    }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        self.startPlayVideo(index: indexPath.item)
+        
     }
 }
 
@@ -144,9 +156,35 @@ extension MSVideoPlayController: MSVideoPlayerDelegate {
     
     func playerStatusChaned(player: MSVideoPlayer,to: MSVideoPlayerStatus) {
         self.currentPlaingCell?.playStatusChanged(to: to)
+        if to == .playing {
+            print("***playerStatusChaned : playing")
+        }else if to == .prepared {
+            print("***playerStatusChaned : prepared")
+        }else if to == .unload {
+            print("***playerStatusChaned : unload")
+        }else if to == .loading {
+            print("***playerStatusChaned : loading")
+        }else if to == .ended {
+            print("***playerStatusChaned : ended")
+        }else if to == .error {
+            print("***playerStatusChaned : error")
+        }else if to == .paused {
+            print("***playerStatusChaned : paused")
+        }
     }
     
     func playerProgressChanged(player: MSVideoPlayer,currentT: Float,totalT: Float,progress: Float) {
         
+    }
+}
+
+extension MSVideoPlayController: MSVideoListCellDelegate {
+    
+    func needToPlayOrPause(pause: Bool) {
+        if pause {
+            self.currentPlayer?.pausePlay()
+        }else {
+            self.currentPlayer?.resumePlay()
+        }
     }
 }

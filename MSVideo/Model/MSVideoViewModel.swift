@@ -28,6 +28,8 @@ class MSVideoViewModel: NSObject {
                 if let requestID = result?["requestId"] as? String,let media = result?["media"] as? [String: Any] {
                     let model = MSVideoModel.deserialize(from: media)
                     model?.requestId = requestID
+                    let subStreams = model?.streamingInfo.plainOutput.subStreams.count ?? 0
+                    model?.basicInfo.bitrateIndex = subStreams > 0 ? subStreams - 1 : 0
                     if model != nil {
                         resultArr.append(model!)
                     }

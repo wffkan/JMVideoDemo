@@ -49,4 +49,11 @@ class BFTabBarController: UITabBarController {
         addChild(profileNav)
         
     }
+    
+    override var childForStatusBarHidden: UIViewController? {
+        return self.selectedViewController
+    }
+    override var childForStatusBarStyle: UIViewController? {
+        return self.selectedViewController
+    }
 }

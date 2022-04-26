@@ -74,11 +74,9 @@ class MSVideoPlayer: NSObject {
     //预加载
     func preparePlayVideo(model: MSVideoModel) {
         
-        isPrepared = false
         removeVideo()
         player.isAutoPlay = false
         startPlay(url: model.streamingInfo.plainOutput.url)
-        player.setBitrateIndex(model.basicInfo.bitrateIndex)
     }
     
     //根据指定url在指定视图上播放视频
@@ -98,14 +96,14 @@ class MSVideoPlayer: NSObject {
     func removeVideo() {
         player.stopPlay()
         player.removeVideoWidget()
-        playerStatusChange(status: .unload)
+//        playerStatusChange(status: .unload)
     }
     
     //暂停播放
     
     func pausePlay() {
         player.pause()
-        playerStatusChange(status: .paused)
+//        playerStatusChange(status: .paused)
     }
     
     //恢复播放
@@ -113,9 +111,10 @@ class MSVideoPlayer: NSObject {
     func resumePlay() {
         if status == .paused || status == .prepared || status == .loading {
             player.resume()
-            playerStatusChange(status: .playing)
-        }else {
-            isPrepared = true
+//            playerStatusChange(status: .playing)
+        }else if status == .ended { // 播放结束，从头开始放
+            self.seekToTime(time: 0)
+            player.resume()
         }
     }
     
@@ -171,8 +170,6 @@ class MSVideoPlayer: NSObject {
     
     private var isNeedResume: Bool = false
     
-    private var isPrepared: Bool = false
-    
     override init() {
         super.init()
         
@@ -194,17 +191,8 @@ extension MSVideoPlayer: TXVodPlayListener {
                 
             case PLAY_EVT_VOD_PLAY_PREPARED.rawValue:        //  视频加载完毕
                 playerStatusChange(status: .prepared)
-                if isPrepared {
-                    player.resume()
-                    isPrepared = false
-                    playerStatusChange(status: .playing)
-                }
             case PLAY_EVT_PLAY_LOADING.rawValue:        //  加载中
-                if status == .paused {
-                    playerStatusChange(status: .paused)
-                }else {
-                    playerStatusChange(status: .loading)
-                }
+                playerStatusChange(status: .loading)
             case PLAY_EVT_PLAY_PROGRESS.rawValue:        //  播放进度
                 if let duration = param[EVT_PLAY_DURATION] as? Float {
                     self.duration = duration

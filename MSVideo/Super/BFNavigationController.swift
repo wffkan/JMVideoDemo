@@ -27,4 +27,12 @@ class BFNavigationController: UINavigationController {
         }
         super.pushViewController(viewController, animated: animated)
     }
+    
+    override var childForStatusBarHidden: UIViewController? {
+        return self.topViewController
+    }
+
+    override var childForStatusBarStyle: UIViewController? {
+        return self.topViewController
+    }
 }

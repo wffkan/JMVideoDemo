@@ -17,14 +17,32 @@ let SHARE_TAP_ACTION:Int = 4000
 
 typealias OnPlayerReady = () -> Void
 
+protocol MSVideoListCellDelegate: NSObjectProtocol {
+    
+    func needToPlayOrPause(pause: Bool)
+}
+
 class MSVideoListCell: UICollectionViewCell {
     
-    var playerView: MSPlayView = MSPlayView()
+    lazy var playerView: MSPlayView = {
+        let view = MSPlayView()
+        view.backgroundColor = .clear
+        return view
+    }()
     
     var videoModel: MSVideoModel!
     
+    weak var delegate: MSVideoListCellDelegate?
+    
     private var container: UIView = UIView()
 
+    lazy private var bgImageView: UIImageView = {
+        let bgImageView = UIImageView()
+        bgImageView.contentMode = .scaleAspectFill
+        bgImageView.clipsToBounds = true
+        return bgImageView
+    }()
+    
     private lazy var gradientLayer: CAGradientLayer = {
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [ColorClear.cgColor, ColorBlackAlpha20.cgColor, ColorBlackAlpha40.cgColor]
@@ -91,6 +109,7 @@ class MSVideoListCell: UICollectionViewCell {
 
     private func setupSubViews() {
         
+        contentView.addSubview(bgImageView)
         contentView.addSubview(playerView)
         contentView.addSubview(container)
         
@@ -164,7 +183,6 @@ class MSVideoListCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         isPlayerReady = false
-        playerView.bgImageView.isHidden = false
         pauseIcon.isHidden = true
         
         avatarIcon.image = UIImage(named: "img_find_default")
@@ -182,7 +200,7 @@ class MSVideoListCell: UICollectionViewCell {
         favoriteNum.text = String.formatCount(count: 58)
         commentNum.text = String.formatCount(count: 12)
         shareNum.text = String.formatCount(count: 66)
-        self.playerView.bgImageView.kf.setImage(with: URL(string: model.basicInfo.coverUrl))
+        self.bgImageView.kf.setImage(with: URL(string: model.basicInfo.coverUrl))
     }
     
     func updateProgress(progress: Float) {
@@ -191,12 +209,13 @@ class MSVideoListCell: UICollectionViewCell {
     
     func playStatusChanged(to status: MSVideoPlayerStatus) {
 
-        self.playerView.bgImageView.isHidden = status != .prepared
-        self.pauseIcon.isHidden = (status == .playing || status == .loading)
+        self.pauseIcon.isHidden = (status == .playing || status == .loading || status == .prepared)
+        
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        bgImageView.frame = self.bounds
         container.frame = self.bounds
         playerView.frame = self.bounds
         pauseIcon.frame = CGRect(x: self.bounds.midX - 50, y: self.bounds.midY - 50, width: 100, height: 100)
@@ -321,12 +340,9 @@ extension MSVideoListCell {
     }
     
     @objc func singleTapAction() {
-//        if hoverTextView.isFirstResponder {
-//            hoverTextView.resignFirstResponder()
-//        } else {
-//            showPauseViewAnim(rate: playerView.rate())
-//            playerView.updatePlayerState()
-//        }
+
+        self.delegate?.needToPlayOrPause(pause: self.pauseIcon.isHidden)
+        showPauseViewAnim()
     }
     
 }
@@ -335,12 +351,13 @@ extension MSVideoListCell {
 //animation
 extension MSVideoListCell {
     
-    func showPauseViewAnim(rate:CGFloat) {
-        if rate == 0 {
+    func showPauseViewAnim() {
+        if self.pauseIcon.isHidden == false {
             UIView.animate(withDuration: 0.25, animations: {
                 self.pauseIcon.alpha = 0.0
             }) { finished in
                 self.pauseIcon.isHidden = true
+                self.pauseIcon.alpha = 1
             }
         } else {
             pauseIcon.isHidden = false
