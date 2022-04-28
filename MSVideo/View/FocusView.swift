@@ -33,6 +33,7 @@ class FocusView: UIImageView {
     }
     
     @objc func beginAnimation() {
+        UIDevice.impactFeedback()
         let animationGroup = CAAnimationGroup.init()
         animationGroup.delegate = self
         animationGroup.duration = 1.25

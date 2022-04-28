@@ -6,41 +6,21 @@
 //
 
 import Foundation
-
+import HandyJSON
 
 class MSVideoViewModel: NSObject {
     
     func refreshNewList(success: @escaping (_ list: [MSVideoModel]?) -> Void,fail:@escaping (_ error: NSError?) -> Void) {
         
-        let videoUrlArr = MSVideoUtils.loadDefaultVideoUrls()
-        if videoUrlArr.count == 0 {
-            fail(nil)
+        guard let path = Bundle.main.path(forResource: "video", ofType: "json"),
+              let json = try? String.init(contentsOfFile: path) else {
+                  fail(nil)
             return
         }
-        var resultArr: [MSVideoModel] = []
-        let workingGroup = DispatchGroup()
-        
-        for field in videoUrlArr {
-            
-            workingGroup.enter()
-            NetWorkManager.netWorkRequest(.videoList(field: field)) { result in
-                
-                if let requestID = result?["requestId"] as? String,let media = result?["media"] as? [String: Any] {
-                    let model = MSVideoModel.deserialize(from: media)
-                    model?.requestId = requestID
-                    let subStreams = model?.streamingInfo.plainOutput.subStreams.count ?? 0
-                    model?.basicInfo.bitrateIndex = subStreams > 0 ? subStreams - 1 : 0
-                    if model != nil {
-                        resultArr.append(model!)
-                    }
-                }
-                workingGroup.leave()
-            } fail: { error in
-                workingGroup.leave()
-            }
-        }
-        workingGroup.notify(queue: .main) {
-            success(resultArr)
+        if let models = JSONDeserializer<MSVideoModel>.deserializeModelArrayFrom(json: json, designatedPath: "Items") as? [MSVideoModel] {
+            success(models)
+        }else {
+            fail(nil)
         }
     }
 

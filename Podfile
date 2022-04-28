@@ -12,7 +12,8 @@ target 'MSVideo' do
   pod 'HandyJSON'
   pod 'SnapKit'
   pod 'SVProgressHUD'
-
-  pod 'TXLiteAVSDK_Professional'
+  pod 'Hero'
+  
+  pod 'AliPlayerSDK_iOS'
   
 end

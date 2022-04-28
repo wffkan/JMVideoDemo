@@ -9,36 +9,36 @@ import Foundation
 import UIKit
 import SnapKit
 import Kingfisher
+import Hero
+
 
 let LIKE_BEFORE_TAP_ACTION:Int = 1000
 let LIKE_AFTER_TAP_ACTION:Int = 2000
 let COMMENT_TAP_ACTION:Int = 3000
 let SHARE_TAP_ACTION:Int = 4000
 
-typealias OnPlayerReady = () -> Void
-
 protocol MSVideoListCellDelegate: NSObjectProtocol {
     
     func needToPlayOrPause(pause: Bool)
+    
+    func needToSeek(to progress: Float)
 }
 
 class MSVideoListCell: UICollectionViewCell {
-    
-    lazy var playerView: MSPlayView = {
-        let view = MSPlayView()
-        view.backgroundColor = .clear
-        return view
-    }()
     
     var videoModel: MSVideoModel!
     
     weak var delegate: MSVideoListCellDelegate?
     
-    private var container: UIView = UIView()
+    lazy private var container: MSVideoContainer = {
+        let view = MSVideoContainer()
+        view.delegate = self
+        return view
+    }()
 
-    lazy private var bgImageView: UIImageView = {
+    lazy var bgImageView: UIImageView = {
         let bgImageView = UIImageView()
-        bgImageView.contentMode = .scaleAspectFill
+        bgImageView.contentMode = .scaleAspectFit
         bgImageView.clipsToBounds = true
         return bgImageView
     }()
@@ -68,8 +68,6 @@ class MSVideoListCell: UICollectionViewCell {
         return playerStatusBar
     }()
     
-    private var singleTapGesture: UITapGestureRecognizer?
-    
     private var lastTapTime: TimeInterval = 0
     
     private var lastTapPoint: CGPoint = .zero
@@ -98,28 +96,27 @@ class MSVideoListCell: UICollectionViewCell {
     
     private var favoriteNum: UILabel = UILabel()
     
-    private var onPlayerReady:OnPlayerReady?
-    private var isPlayerReady:Bool = false
+    private var progressIndicator = ProgressIndicator()
+
+    private var isProgressDraging: Bool = false  //是否正处于进度条长按拖动中
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .clear
+        contentView.backgroundColor = .clear
         setupSubViews()
     }
 
     private func setupSubViews() {
         
         contentView.addSubview(bgImageView)
-        contentView.addSubview(playerView)
         contentView.addSubview(container)
-        
-        singleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleGesture))
-        container.addGestureRecognizer(singleTapGesture!)
         
         container.layer.addSublayer(gradientLayer)
         container.addSubview(pauseIcon)
         
         container.addSubview(playerStatusBar)
+        container.addSubview(progressIndicator)
         
         musicIcon.contentMode = .center
         container.addSubview(musicIcon)
@@ -182,11 +179,10 @@ class MSVideoListCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        isPlayerReady = false
         pauseIcon.isHidden = true
         
         avatarIcon.image = UIImage(named: "img_find_default")
-        
+        progressIndicator.updateProgess(progress: 0)
 //        musicAlum.resetView()
         favorite.resetView()
         focus.resetView()
@@ -200,24 +196,29 @@ class MSVideoListCell: UICollectionViewCell {
         favoriteNum.text = String.formatCount(count: 58)
         commentNum.text = String.formatCount(count: 12)
         shareNum.text = String.formatCount(count: 66)
-        self.bgImageView.kf.setImage(with: URL(string: model.basicInfo.coverUrl))
+        if model.coverUrl.hasPrefix("http") {
+            let coverUrl = model.coverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+            self.bgImageView.kf.setImage(with: URL(string: coverUrl))
+        }else {
+            let coverUrl = Bundle.main.path(forResource: model.coverUrl, ofType: "png") ?? ""
+            self.bgImageView.kf.setImage(with: URL(fileURLWithPath: coverUrl))
+        }
     }
     
     func updateProgress(progress: Float) {
-        
+        if self.isProgressDraging {return}
+        progressIndicator.updateProgess(progress: progress)
     }
     
     func playStatusChanged(to status: MSVideoPlayerStatus) {
 
-        self.pauseIcon.isHidden = (status == .playing || status == .loading || status == .prepared)
-        
+        self.pauseIcon.isHidden = (status != .paused)
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
         bgImageView.frame = self.bounds
         container.frame = self.bounds
-        playerView.frame = self.bounds
         pauseIcon.frame = CGRect(x: self.bounds.midX - 50, y: self.bounds.midY - 50, width: 100, height: 100)
         
         CATransaction.begin()
@@ -298,6 +299,11 @@ class MSVideoListCell: UICollectionViewCell {
             make.centerY.equalTo(self.avatarIcon.snp.bottom);
             make.width.height.equalTo(24);
         }
+        progressIndicator.snp.makeConstraints { make in
+            make.left.right.equalToSuperview()
+            make.height.equalTo(2)
+            make.bottom.equalToSuperview().offset(-UIScreen.safeAreaBottomHeight - 30)
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -305,7 +311,64 @@ class MSVideoListCell: UICollectionViewCell {
     }
 }
 
-extension MSVideoListCell {
+extension MSVideoListCell: MSVideoContainerDelegate {
+    
+    func containerTapGestureHandler(ges: UITapGestureRecognizer) {
+        self.handleGesture(ges: ges)
+    }
+    
+    static var preX: CGFloat = 0
+    static var startProgess: Float = 0
+    func containerLongGestureHandler(ges: UILongPressGestureRecognizer) {
+        switch ges.state {
+            case .began:
+                let startPoint = ges.location(in: ges.view)
+                self.progressIndicator.progressType = 1
+                MSVideoListCell.preX = startPoint.x
+                MSVideoListCell.startProgess = self.progressIndicator.progress
+                //先暂停
+                self.isProgressDraging = true
+                delegate?.needToPlayOrPause(pause: true)
+                break
+            case .changed:
+                let point = ges.location(in: ges.view)
+                let offsetX = point.x - MSVideoListCell.preX
+                let n_progress = MSVideoListCell.startProgess + Float(offsetX / self.progressIndicator.width)
+                self.progressIndicator.updateProgess(progress: n_progress, animated: false)
+//                print("progress: \(self.progressIndicator.progress)")
+                delegate?.needToSeek(to: n_progress)
+                break
+            case .ended:
+                self.progressIndicator.progressType = 0
+                self.isProgressDraging = false
+                //继续播放
+                delegate?.needToPlayOrPause(pause: false)
+                break
+            default:
+                self.progressIndicator.progressType = 0
+                self.isProgressDraging = false
+                //继续播放
+                delegate?.needToPlayOrPause(pause: false)
+                break
+        }
+    }
+    
+    func containerPanGestureHandler(ges: UIPanGestureRecognizer) {
+        let translation = ges.translation(in: container)
+        switch ges.state {
+        case .began:
+                self.currentVC()?.dismiss(animated: true, completion: nil)
+        case .changed:
+                Hero.shared.update(translation.x / container.bounds.width)
+        default:
+          let velocity = ges.velocity(in: container)
+          if ((translation.x + velocity.x) / container.bounds.width) > 0.5 {
+            Hero.shared.finish()
+          } else {
+            Hero.shared.cancel()
+          }
+        }
+    }
     
     @objc func handleGesture(ges: UITapGestureRecognizer) {
         

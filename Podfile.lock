@@ -1,6 +1,10 @@
 PODS:
   - Alamofire (5.5.0)
+  - AliPlayerSDK_iOS (5.4.6.0):
+    - AliPlayerSDK_iOS/AliPlayerSDK (= 5.4.6.0)
+  - AliPlayerSDK_iOS/AliPlayerSDK (5.4.6.0)
   - HandyJSON (5.0.2)
+  - Hero (1.6.1)
   - Kingfisher (7.2.0)
   - MJRefresh (3.7.5)
   - Moya (15.0.0):
@@ -9,38 +13,40 @@ PODS:
     - Alamofire (~> 5.0)
   - SnapKit (5.0.1)
   - SVProgressHUD (2.2.5)
-  - TXLiteAVSDK_Professional (9.5.11346)
 
 DEPENDENCIES:
+  - AliPlayerSDK_iOS
   - HandyJSON
+  - Hero
   - Kingfisher
   - MJRefresh
   - Moya
   - SnapKit
   - SVProgressHUD
-  - TXLiteAVSDK_Professional
 
 SPEC REPOS:
   trunk:
     - Alamofire
+    - AliPlayerSDK_iOS
     - HandyJSON
+    - Hero
     - Kingfisher
     - MJRefresh
     - Moya
     - SnapKit
     - SVProgressHUD
-    - TXLiteAVSDK_Professional
 
 SPEC CHECKSUMS:
   Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
+  AliPlayerSDK_iOS: b81416756ef4d4814ecfe1fff0d97a97ee827cbb
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
+  Hero: 215865ba3ae41dd9bb08cd6c60a645529c6fc94b
   Kingfisher: 3ac0b75b155cabc0e544877d1a4deea29feece92
   MJRefresh: fdf5e979eb406a0341468932d1dfc8b7f9fce961
   Moya: 138f0573e53411fb3dc17016add0b748dfbd78ee
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
-  TXLiteAVSDK_Professional: 645670c9d1bbabb88e8dff998fb097a22fe71208
 
-PODFILE CHECKSUM: b9f433d78bed05d85e136baee92fccb594d75695
+PODFILE CHECKSUM: 1914b3c1e6fffa4793276b474fdf2459f17b4262
 
 COCOAPODS: 1.11.3

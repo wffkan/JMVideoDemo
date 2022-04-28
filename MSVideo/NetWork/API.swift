@@ -10,7 +10,7 @@ import Moya
 import Alamofire
 
 enum API {
-    case videoList(field: String)
+    case videoList
     case register(phone: String,nickName: String,avatar: String)
     case download(url: String,destination: String)
 }
@@ -21,15 +21,13 @@ extension API: TargetType {
         case .download(let url, _):
             return URL(string: url)!
         default:
-            let serverUrl = "https://playvideo.qcloud.com/getplayinfo/v4/1500005830/"
+            let serverUrl = "https://api-demo.qnsdk.com/v1/kodo/bucket/demo-videos?prefix=shortvideo"
             return URL(string: serverUrl)!
         }
     }
     
     var path: String {
         switch self {
-        case .videoList(let field):
-            return field
         case .register:
             return "/user/reg"
         default:
@@ -54,7 +52,7 @@ extension API: TargetType {
                 return (URL(fileURLWithPath: savePath),[.removePreviousFile,.createIntermediateDirectories])
             }
             return .downloadDestination(destination)
-        case .videoList(field: _):
+        case .videoList:
             return .requestPlain
         default:
             return .requestParameters(parameters: params, encoding: JSONEncoding.default)

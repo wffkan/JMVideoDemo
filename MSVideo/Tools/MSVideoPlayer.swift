@@ -7,19 +7,23 @@
 
 import Foundation
 import UIKit
-import TXLiteAVSDK_Professional
+import AliyunPlayer
 
 
 enum MSVideoPlayerStatus {
     case unload // 未加载
-    case prepared // 准备播放
-    case loading // 加载中
-    case playing // 播放中
+    case firstRenderedStart // 首帧显示
+    case autoPlayStart // 自动播放开始事件
+    case loadingStart // 缓冲开始
+    case loadingEnd // 缓冲结束
     case paused // 暂停
     case ended // 播放完成
+    case seekEnd  // 跳转完成
+    case loopingStart  // 循环播放开始
     case error // 错误
 }
 
+let MSVideoPlayerManager = MSVideoPlayer.shareInstance
 protocol MSVideoPlayerDelegate: NSObjectProtocol {
     
     func playerStatusChaned(player: MSVideoPlayer,to: MSVideoPlayerStatus)
@@ -31,153 +35,162 @@ class MSVideoPlayer: NSObject {
     
     weak var delegate: MSVideoPlayerDelegate?
     
-    var status: MSVideoPlayerStatus?
+    static let shareInstance: MSVideoPlayer = MSVideoPlayer()
     
-    var isPlaying: Bool {
-        return player.isPlaying()
+    private override init() {
+        super.init()
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationEnterBackground), name: UIApplication.willResignActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
     
-    var loop: Bool = false {
-        didSet {
-            player.loop = loop
-        }
+    lazy private var player: AliListPlayer = {
+        let player = self.createPlayer()
+        return player
+    }()
+    
+    lazy var playView: MSPlayView = {
+        let view = MSPlayView()
+        view.backgroundColor = .clear
+        view.frame = UIScreen.main.bounds
+        view.isHidden = true
+        return view
+    }()
+    
+    var duration: Int {
+        return Int(self.player.duration)
     }
     
-    var isAutoPlay: Bool = false {
-        didSet {
-            player.isAutoPlay = isAutoPlay
-        }
+    private var playList: [MSVideoModel] = []
+    
+    private(set) var currentPlayingIndex: Int = 0
+    
+    private(set) var isPlaying: Bool = false // 是否正在播放
+    
+    private var needToAutoResume: Bool = false  //用于记录返回前台时是否要自动恢复播放
+    
+    private func createPlayer() -> AliListPlayer {
+        let player = AliListPlayer.init()!
+        player.preloadCount = 2
+        player.isAutoPlay = true
+        player.delegate = self
+        player.isLoop = true
+        player.scalingMode = AVP_SCALINGMODE_SCALEASPECTFIT
+        player.enableHardwareDecoder = true
+        player.stsPreloadDefinition = "FD"
+        player.playerView = self.playView
+        let config = AVPConfig()
+        config.startBufferDuration = 250  //起播缓冲区时长。单位ms
+        player.setConfig(config)
+        //本地缓存
+        let cacheConfig = AVPCacheConfig()
+        cacheConfig.enable = true
+        cacheConfig.maxDuration = 100
+        cacheConfig.path = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).last!
+        cacheConfig.maxSizeMB = 200
+        player.setCacheConfig(cacheConfig)
+        return player
     }
     
-    /**
-     * 当播放地址为master playlist，返回支持的码率（清晰度）
-     *
-     * @warning 在收到EVT_VIDEO_PLAY_BEGIN事件后才能正确返回结果
-     * @return 无多码率返回空数组
-     */
-    var supportedBitrates: [TXBitrateItem] {
-        return player.supportedBitrates()
+    func changePlayView(to view: UIView) {
+        self.player.playerView = view
     }
     
-    /**
-     * 设置当前正在播放的码率索引，无缝切换清晰度
-     *  清晰度切换可能需要等待一小段时间。腾讯云支持多码率HLS分片对齐，保证最佳体验。
-     *
-     * @param index 码率索引，index == -1，表示开启HLS码流自适应；index > 0 （可从supportedBitrates获取），表示手动切换到对应清晰度码率
-     */
-    var bitrateIndex: Int = 0 {
-        didSet {
-            player.setBitrateIndex(bitrateIndex)
-        }
-    }
-    
-    //预加载
-    func preparePlayVideo(model: MSVideoModel) {
-        
-        removeVideo()
-        player.isAutoPlay = false
-        startPlay(url: model.streamingInfo.plainOutput.url)
-    }
-    
-    //根据指定url在指定视图上播放视频
-    
-    func playVideo(in playView: UIView,url videoUrl: String) {
-        
-        player.setupVideoWidget(playView, insert: 0)
-        if player.isAutoPlay {
-            player.startPlay(videoUrl)
-        }else {
-            resumePlay()
-        }
-    }
-    
-    //停止播放并移除播放视图
-    
-    func removeVideo() {
-        player.stopPlay()
-        player.removeVideoWidget()
-//        playerStatusChange(status: .unload)
-    }
-    
-    //暂停播放
-    
-    func pausePlay() {
-        player.pause()
-//        playerStatusChange(status: .paused)
-    }
-    
-    //恢复播放
-    
-    func resumePlay() {
-        if status == .paused || status == .prepared || status == .loading {
-            player.resume()
-//            playerStatusChange(status: .playing)
-        }else if status == .ended { // 播放结束，从头开始放
-            self.seekToTime(time: 0)
-            player.resume()
-        }
-    }
-    
-    //开始播放
-    
-    func startPlay(url: String) {
-        player.startPlay(url)
-    }
-    
-    //播放跳转到某个时间
-    
-    func seekToTime(time: Float) {
-        player.seek(time)
-    }
-    
-    //应用进入前台处理
-    
-    func detailAppWillEnterForeground() {
-        if isNeedResume && status == .paused {
-            isNeedResume = false
-            try? AVAudioSession.sharedInstance().setCategory(.playback)
-            try? AVAudioSession.sharedInstance().setActive(true, options: [])
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {[weak self] in
-                guard let `self` = self else{return}
-                self.resumePlay()
+    func addVideoSource(arr: [MSVideoModel]) {
+        //去重
+        for model in arr {
+            if self.playList.contains(where: { $0.video_id == model.video_id}) == false {
+                self.playList.append(model)
+                self.player.addUrlSource(model.url, uid: model.video_id)
             }
         }
     }
     
-    //应用退到后台处理
+    func cleanList() {
+        self.player.clear()
+        self.playList.removeAll()
+        self.currentPlayingIndex = 0
+        self.isPlaying = false
+        self.needToAutoResume = false
+    }
     
-    func detailAppDidEnterBackground() {
-        if status == .loading || status == .playing || status == .prepared {
-            pausePlay()
-            isNeedResume = true
+    func removeSource(model: MSVideoModel) {
+        self.player.removeSource(model.video_id)
+        if let index = self.playList.firstIndex(where: { $0.video_id == model.video_id}) {
+            self.player.removeSource(model.video_id)
+            self.playList.remove(at: index)
         }
     }
     
-    
-    private lazy var player: TXVodPlayer = {
-        let player = TXVodPlayer()
-        player.enableHWAcceleration = true
-        player.vodDelegate = self
-        let config = TXVodPlayConfig()
-        config.maxBufferSize = 3
-        config.smoothSwitchBitrate = false
-        player.config = config
-        player.setRenderMode(.RENDER_MODE_FILL_SCREEN)
-        return player
-    }()
-    
-    private var duration: Float = 0
-    
-    private var isNeedResume: Bool = false
-    
-    override init() {
-        super.init()
-        
+    func moveToPlay(atIndex: Int) {
+        if atIndex < self.playList.count {
+            self.player.move(to: self.playList[atIndex].video_id)
+            self.currentPlayingIndex = atIndex
+        }
+    }
+
+    func moveToNext() {
+        if self.currentPlayingIndex + 1 < self.playList.count {
+            self.player.moveToNext()
+            self.currentPlayingIndex += 1
+        }
     }
     
-    private func playerStatusChange(status: MSVideoPlayerStatus) {
-        self.status = status
-        self.delegate?.playerStatusChaned(player: self, to: status)
+    func moveToPre() {
+        if self.currentPlayingIndex - 1 >= 0 {
+            self.player.moveToPre()
+            self.currentPlayingIndex -= 1
+        }
+    }
+    
+    func videoPause() {
+        self.isPlaying = false
+        self.player.pause()
+    }
+    
+    func videoResume() {
+        self.isPlaying = true
+        self.player.start()
+    }
+    
+    func videoStop() {
+        self.isPlaying = false
+        self.player.stop()
+    }
+    
+    func videoDestroy() {
+        self.playView.removeFromSuperview()
+        self.player.destroy()
+        self.player = self.createPlayer()
+    }
+    
+    func videoSeek(progress: Float) {
+        self.player.seek(toTime: Int64(Float(self.player.duration) * progress), seekMode: AVP_SEEKMODE_ACCURATE)
+    }
+    
+    func videoInfo() -> String {
+        if let info = self.player.getCurrentTrack(AVPTRACK_TYPE_VIDEO) {
+            return "duration: \(player.duration/1000)s\n Bitrate: \(String.init(format: "%.1f", Float(info.trackBitrate)/1024/1024))Mbps\n width: \(info.videoWidth) \n height: \(info.videoHeight) \n "
+        }
+        return ""
+    }
+    
+    @objc private func applicationEnterBackground() {
+        if self.isPlaying {
+            self.needToAutoResume = true
+        }else {
+            self.needToAutoResume = false
+        }
+        self.videoPause()
+        self.player.isAutoPlay = false
+        self.delegate?.playerStatusChaned(player: self, to: .paused)
+    }
+    
+    @objc private func applicationDidBecomeActive() {
+        if self.needToAutoResume {
+            self.videoResume()
+            self.delegate?.playerStatusChaned(player: self, to: .autoPlayStart)
+        }
+        self.player.isAutoPlay = true
     }
     
     deinit {
@@ -185,35 +198,69 @@ class MSVideoPlayer: NSObject {
     }
 }
 
-extension MSVideoPlayer: TXVodPlayListener {
-    func onPlayEvent(_ player: TXVodPlayer!, event EvtID: Int32, withParam param: [AnyHashable : Any]!) {
-        switch EvtID {
-                
-            case PLAY_EVT_VOD_PLAY_PREPARED.rawValue:        //  视频加载完毕
-                playerStatusChange(status: .prepared)
-            case PLAY_EVT_PLAY_LOADING.rawValue:        //  加载中
-                playerStatusChange(status: .loading)
-            case PLAY_EVT_PLAY_PROGRESS.rawValue:        //  播放进度
-                if let duration = param[EVT_PLAY_DURATION] as? Float {
-                    self.duration = duration
-                }
-                if let currentT = param[EVT_PLAY_PROGRESS] as? Float {
-                    let progress = self.duration == 0 ? 0 : currentT / self.duration
-                    delegate?.playerProgressChanged(player: self, currentT: currentT, totalT: self.duration, progress: progress)
-                }
-            case PLAY_EVT_PLAY_END.rawValue:              //  播放结束
-                delegate?.playerProgressChanged(player: self, currentT: self.duration, totalT: self.duration, progress: 1.0)
-                playerStatusChange(status: .ended)
-            case PLAY_ERR_NET_DISCONNECT.rawValue:        //  失败，多次重链无效
-                playerStatusChange(status: .error)
+extension MSVideoPlayer: AVPDelegate {
+    
+    func onError(_ player: AliPlayer!, errorModel: AVPErrorModel!) {
+        print("视频播放错误: \(String(describing: errorModel.message))")
+        self.delegate?.playerStatusChaned(player: self, to: .error)
+    }
+
+    func onPlayerEvent(_ player: AliPlayer!, eventType: AVPEventType) {
+        switch eventType {
+            case AVPEventPrepareDone:  // 准备完成
+                self.isPlaying = true
+                break
+            case AVPEventAutoPlayStart:  // 自动播放开始事件
+                self.isPlaying = true
+                self.delegate?.playerStatusChaned(player: self, to: .autoPlayStart)
+                break
+            case AVPEventFirstRenderedStart:  // 首帧显示
+                self.isPlaying = true
+                self.delegate?.playerStatusChaned(player: self, to: .firstRenderedStart)
+                break
+            case AVPEventCompletion:  // 播放完成
+                self.isPlaying = false
+                self.delegate?.playerStatusChaned(player: self, to: .ended)
+                break
+            case AVPEventLoadingStart:  // 缓冲开始
+                self.delegate?.playerStatusChaned(player: self, to: .loadingStart)
+                break
+            case AVPEventLoadingEnd:  // 缓冲完成
+                self.delegate?.playerStatusChaned(player: self, to: .loadingEnd)
+                break
+            case AVPEventSeekEnd:  // 跳转完成
+                self.isPlaying = true
+                self.delegate?.playerStatusChaned(player: self, to: .seekEnd)
+                break
+            case AVPEventLoopingStart:  // 循环播放开始
+                self.isPlaying = true
+                self.delegate?.playerStatusChaned(player: self, to: .loopingStart)
+                break
             default:
                 break
         }
     }
     
-    func onNetStatus(_ player: TXVodPlayer!, withParam param: [AnyHashable : Any]!) {
+    //视频当前播放位置回调
+    func onCurrentPositionUpdate(_ player: AliPlayer!, position: Int64) {
+        self.delegate?.playerProgressChanged(player: self, currentT: Float(position), totalT: Float(self.duration), progress: Float(position) / Float(self.duration))
+    }
+    
+    //视频缓存位置回调
+    func onBufferedPositionUpdate(_ player: AliPlayer!, position: Int64) {
         
     }
     
+    //获取track信息回调
+    func onTrackReady(_ player: AliPlayer!, info: [AVPTrackInfo]!) {
+        
+    }
     
+    func onPlayerEvent(_ player: AliPlayer!, eventWithString: AVPEventWithString, description: String!) {
+        if eventWithString == EVENT_PLAYER_CACHE_SUCCESS {
+            print("缓存成功事件")
+        }else if eventWithString == EVENT_PLAYER_CACHE_ERROR {
+            print("缓存失败事件")
+        }
+    }
 }

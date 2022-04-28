@@ -123,6 +123,7 @@ class FavoriteView: UIView {
     @objc func handleGesture(sender:UITapGestureRecognizer) {
         switch sender.view?.tag {
         case LIKE_BEFORE_TAP_ACTION:
+                UIDevice.impactFeedback()
             startLikeAnim(isLike: true)
             break
         case LIKE_AFTER_TAP_ACTION:

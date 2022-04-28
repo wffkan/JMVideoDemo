@@ -6,42 +6,44 @@
 //
 
 import Foundation
+import HandyJSON
 
-class MSVideoModel: BaseModel {
+
+class MSVideoData: HandyJSON {
     
-    var requestId: String = ""
-    var basicInfo: VideoBasicInfo = VideoBasicInfo()
-    var streamingInfo: VideoStreamingInfo = VideoStreamingInfo()
-    var audioVideoType: String = ""
+    var Items: [MSVideoModel] = []
+    
+    required init() {}
 }
 
-class VideoBasicInfo: BaseModel {
+class MSVideoModel: HandyJSON {
     
+    var video_id: String = ""
+    var fsize: Int = 0
+    var putTime: Int = 0
     var name: String = ""
-    var size: Int = 0
-    var duration: Int = 0
+    var url: String = ""
+    var videoType: String = ""
     var coverUrl: String = ""
-    var bitrateIndex: Int = 0
-}
-
-class VideoStreamingInfo: BaseModel {
-    
-    var plainOutput: VideoPlainOutput = VideoPlainOutput()
-    var widevineLicenseUrl: String = ""
-    var fairplayLicenseUrl: String = ""
-}
-
-class VideoStream: BaseModel {
-    
-    var type: String = ""
     var width: Int = 0
     var height: Int = 0
-    var resolutionName: String = ""
+    
+    var viewHeight: CGFloat {
+        if self.width == 0 || self.height == 0 {
+            return 200.0
+        }
+        return 200.0 / CGFloat(self.width) * CGFloat(self.height)
+    }
+    
+    required init() {}
+    
+    func mapping(mapper: HelpingMapper) {
+        mapper <<<
+                    self.video_id <-- "hash"
+        mapper <<<
+                    self.videoType <-- "mimeType"
+        mapper <<<
+                    self.name <-- "key"
+    }
 }
 
-class VideoPlainOutput: BaseModel {
-    
-    var type: String = ""
-    var url: String = ""
-    var subStreams: [VideoStream] = []
-}

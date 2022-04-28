@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 public extension UIView {
     
@@ -123,5 +124,16 @@ public extension UIView {
             n_center.y = newValue
             center = n_center
         }
+    }
+    
+    func currentVC() -> UIViewController? {
+        var responser = next
+        while responser != nil {
+            if responser is UIViewController {
+                return responser as? UIViewController
+            }
+            responser = responser?.next
+        }
+        return nil
     }
 }

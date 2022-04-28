@@ -20,7 +20,7 @@ class BFTabBarController: UITabBarController {
             tabBar.scrollEdgeAppearance = appearance
         }
         
-        let homeVC = MSHomeController()
+        let homeVC = MSVideoListController()
         homeVC.tabBarItem.title = "Home_tab"
         homeVC.tabBarItem.image = UIImage(named: "home_tab_nor")
         homeVC.tabBarItem.selectedImage = UIImage(named: "home_tab_sel")
