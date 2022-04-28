@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import SnapKit
 import Kingfisher
-import Hero
+
 
 
 let LIKE_BEFORE_TAP_ACTION:Int = 1000
@@ -22,6 +22,8 @@ protocol MSVideoListCellDelegate: NSObjectProtocol {
     func needToPlayOrPause(pause: Bool)
     
     func needToSeek(to progress: Float)
+    
+    func needToStopScroll(stop: Bool)
 }
 
 class MSVideoListCell: UICollectionViewCell {
@@ -317,9 +319,13 @@ extension MSVideoListCell: MSVideoContainerDelegate {
         self.handleGesture(ges: ges)
     }
     
+    func containerLongGestureHandler(ges: UILongPressGestureRecognizer) {
+        
+    }
+    
     static var preX: CGFloat = 0
     static var startProgess: Float = 0
-    func containerLongGestureHandler(ges: UILongPressGestureRecognizer) {
+    func containerPanGestureHandler(ges: UIPanGestureRecognizer) {
         switch ges.state {
             case .began:
                 let startPoint = ges.location(in: ges.view)
@@ -329,44 +335,28 @@ extension MSVideoListCell: MSVideoContainerDelegate {
                 //先暂停
                 self.isProgressDraging = true
                 delegate?.needToPlayOrPause(pause: true)
-                break
+            //拖动进度条时，将列表上下滚动禁止
+            delegate?.needToStopScroll(stop: true)
             case .changed:
                 let point = ges.location(in: ges.view)
                 let offsetX = point.x - MSVideoListCell.preX
                 let n_progress = MSVideoListCell.startProgess + Float(offsetX / self.progressIndicator.width)
                 self.progressIndicator.updateProgess(progress: n_progress, animated: false)
-//                print("progress: \(self.progressIndicator.progress)")
                 delegate?.needToSeek(to: n_progress)
-                break
             case .ended:
                 self.progressIndicator.progressType = 0
                 self.isProgressDraging = false
                 //继续播放
                 delegate?.needToPlayOrPause(pause: false)
-                break
+                //列表禁止滚动解除
+                delegate?.needToStopScroll(stop: false)
             default:
                 self.progressIndicator.progressType = 0
                 self.isProgressDraging = false
                 //继续播放
                 delegate?.needToPlayOrPause(pause: false)
-                break
-        }
-    }
-    
-    func containerPanGestureHandler(ges: UIPanGestureRecognizer) {
-        let translation = ges.translation(in: container)
-        switch ges.state {
-        case .began:
-                self.currentVC()?.dismiss(animated: true, completion: nil)
-        case .changed:
-                Hero.shared.update(translation.x / container.bounds.width)
-        default:
-          let velocity = ges.velocity(in: container)
-          if ((translation.x + velocity.x) / container.bounds.width) > 0.5 {
-            Hero.shared.finish()
-          } else {
-            Hero.shared.cancel()
-          }
+                //列表禁止滚动解除
+                delegate?.needToStopScroll(stop: false)
         }
     }
     

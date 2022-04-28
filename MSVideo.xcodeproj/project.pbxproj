@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		308552EE281AD62B00B4F9B3 /* PresentScaleAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308552ED281AD62B00B4F9B3 /* PresentScaleAnimation.swift */; };
+		308552F0281AD8AE00B4F9B3 /* DismissScaleAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308552EF281AD8AE00B4F9B3 /* DismissScaleAnimation.swift */; };
+		308552F2281ADAF400B4F9B3 /* DragLeftInteractiveTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308552F1281ADAF400B4F9B3 /* DragLeftInteractiveTransition.swift */; };
 		3094867C2813C001007D0862 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3094867B2813C001007D0862 /* AppDelegate.swift */; };
 		309486852813C003007D0862 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 309486842813C003007D0862 /* Assets.xcassets */; };
 		309486882813C003007D0862 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 309486862813C003007D0862 /* LaunchScreen.storyboard */; };
@@ -76,6 +79,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		308552ED281AD62B00B4F9B3 /* PresentScaleAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentScaleAnimation.swift; sourceTree = "<group>"; };
+		308552EF281AD8AE00B4F9B3 /* DismissScaleAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissScaleAnimation.swift; sourceTree = "<group>"; };
+		308552F1281ADAF400B4F9B3 /* DragLeftInteractiveTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragLeftInteractiveTransition.swift; sourceTree = "<group>"; };
 		309486782813C001007D0862 /* MSVideo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MSVideo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3094867B2813C001007D0862 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		309486842813C003007D0862 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -159,6 +165,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		308552EC281AD61400B4F9B3 /* Transition */ = {
+			isa = PBXGroup;
+			children = (
+				308552ED281AD62B00B4F9B3 /* PresentScaleAnimation.swift */,
+				308552EF281AD8AE00B4F9B3 /* DismissScaleAnimation.swift */,
+				308552F1281ADAF400B4F9B3 /* DragLeftInteractiveTransition.swift */,
+			);
+			path = Transition;
+			sourceTree = "<group>";
+		};
 		3094866F2813C001007D0862 = {
 			isa = PBXGroup;
 			children = (
@@ -259,6 +275,7 @@
 		309486D92813C463007D0862 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				308552EC281AD61400B4F9B3 /* Transition */,
 				309486DA2813C476007D0862 /* MSVideoUtils.swift */,
 				309486DE2813C6E2007D0862 /* MSVideoPlayer.swift */,
 			);
@@ -503,7 +520,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				308552EE281AD62B00B4F9B3 /* PresentScaleAnimation.swift in Sources */,
 				3094867C2813C001007D0862 /* AppDelegate.swift in Sources */,
+				308552F2281ADAF400B4F9B3 /* DragLeftInteractiveTransition.swift in Sources */,
 				309486D42813C3B4007D0862 /* NSDictionary+Ext.swift in Sources */,
 				309486B72813C2B4007D0862 /* BFTabBarController.swift in Sources */,
 				309486D02813C3B4007D0862 /* String+Ext.swift in Sources */,
@@ -528,6 +547,7 @@
 				309486D12813C3B4007D0862 /* UIScreen+Ext.swift in Sources */,
 				64548DC528193AEB00708652 /* MSVideoContainer.swift in Sources */,
 				309486DB2813C476007D0862 /* MSVideoUtils.swift in Sources */,
+				308552F0281AD8AE00B4F9B3 /* DismissScaleAnimation.swift in Sources */,
 				309486D52813C3B4007D0862 /* MSMcros.swift in Sources */,
 				64548DC32819332900708652 /* MSNavigationView.swift in Sources */,
 				309486F42813D801007D0862 /* MusicAlbumView.swift in Sources */,
@@ -710,7 +730,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = WUZZPFNJQ3;
+				DEVELOPMENT_TEAM = 6N3JSL2D62;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MSVideo/Info.plist;
@@ -741,7 +761,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = WUZZPFNJQ3;
+				DEVELOPMENT_TEAM = 6N3JSL2D62;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MSVideo/Info.plist;

@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-import Hero
+
 
 class MSVideoPlayController: BFBaseViewController {
     
@@ -52,13 +52,10 @@ class MSVideoPlayController: BFBaseViewController {
         view.backgroundColor = .black
         view.addSubview(collectionView)
         view.addSubview(navView)
-        
-        self.collectionView.scrollToItem(at: IndexPath(item: needToPlayAtIndex, section: 0), at: .top, animated: false)
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.collectionView.scrollToItem(at: IndexPath(item: self.needToPlayAtIndex, section: 0), at: .top, animated: false)
             self.startPlayVideo(index: self.needToPlayAtIndex)
-            
-            //转场动画
-//            self.currentPlaingCell?.bgImageView.hero.id = "cover_img"
         }
     }
     
@@ -86,6 +83,7 @@ class MSVideoPlayController: BFBaseViewController {
         self.datas.append(contentsOf: datas)
         self.needToPlayAtIndex = playAtIndex
         MSVideoPlayerManager.addVideoSource(arr: datas)
+        collectionView.reloadData()
     }
     
     private func startPlayVideo(index: Int) {
@@ -124,7 +122,6 @@ extension MSVideoPlayController: UICollectionViewDataSource,UICollectionViewDele
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "videoCell", for: indexPath) as! MSVideoListCell
-        cell.hero.id = String.init(format: "cover_img_%d", indexPath.item)
         cell.reloadData(model: datas[indexPath.row])
         cell.delegate = self
         return cell
@@ -199,5 +196,9 @@ extension MSVideoPlayController: MSVideoListCellDelegate {
         }else {
             MSVideoPlayerManager.videoResume()
         }
+    }
+    
+    func needToStopScroll(stop: Bool) {
+        collectionView.isScrollEnabled = !stop
     }
 }

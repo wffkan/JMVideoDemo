@@ -57,14 +57,9 @@ class MSVideoContainer: UIView,UIGestureRecognizerDelegate {
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
 
         let startPoint = gestureRecognizer.location(in: gestureRecognizer.view)
-        if gestureRecognizer === self.longPressGesture {
-            //如果长按的区域在进度条周边范围内，放大进度条利于用户拖动
-            if startPoint.y > self.bottom - UIScreen.safeAreaBottomHeight - 30 + 25 || startPoint.y < self.bottom - UIScreen.safeAreaBottomHeight - 30 - 2 - 25 {
-                return false
-            }
-        }
         if gestureRecognizer === self.panGesture {
-            if startPoint.x > 60 || startPoint.y > self.bottom - UIScreen.safeAreaBottomHeight - 30 + 25 { //pan手势在屏幕边缘时，才响应
+            //如果拖动的区域在进度条周边范围内，放大进度条利于用户拖动
+            if startPoint.y > self.bottom - UIScreen.safeAreaBottomHeight - 30 + 25 || startPoint.y < self.bottom - UIScreen.safeAreaBottomHeight - 30 - 2 - 25 {
                 return false
             }
         }

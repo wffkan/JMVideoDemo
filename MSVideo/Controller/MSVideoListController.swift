@@ -7,7 +7,8 @@
 
 import UIKit
 import MJRefresh
-import Hero
+
+
 
 class MSVideoListController: BFBaseViewController {
     
@@ -27,6 +28,12 @@ class MSVideoListController: BFBaseViewController {
     }()
     
     private var datas: [MSVideoModel] = []
+    
+    private let presentScaleAnimation: PresentScaleAnimation = PresentScaleAnimation()
+    
+    private let dismissScaleAnimation: DismissScaleAnimation = DismissScaleAnimation()
+    
+    private let leftDragInteractiveTransition: DragLeftInteractiveTransition = DragLeftInteractiveTransition()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,22 +63,29 @@ extension MSVideoListController: UITableViewDataSource,UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "listCell", for: indexPath) as! MSDynamicListCell
-        cell.coverImageView.hero.id = String.init(format: "cover_img_%d", indexPath.row)
-//        cell.coverImageView.hero.modifiers = [.useNoSnapshot]
         cell.model = self.datas[indexPath.row]
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //转场动画，标识
-        self.navigationController?.view.hero.modifiers = [.fade]
-        self.tabBarController?.view.hero.modifiers = [.fade]
+
         let playVC = MSVideoPlayController()
-        playVC.hero.isEnabled = true
-        playVC.hero.modalAnimationType = .none
-        playVC.modalPresentationStyle = .fullScreen
         playVC.reloadVideos(datas: self.datas, playAtIndex: indexPath.row)
-        present(playVC, animated: true, completion: nil)
+        playVC.transitioningDelegate = self
+        playVC.modalPresentationStyle = .overCurrentContext
+        
+        if let cell = tableView.cellForRow(at: indexPath) as? MSDynamicListCell {
+            let cellConvertedFrame = cell.convert(cell.coverImageView.frame, to: tableView.superview)
+            
+            self.presentScaleAnimation.cellConvertFrame = cellConvertedFrame
+            self.dismissScaleAnimation.selectCell = cell
+            self.dismissScaleAnimation.finalCellFrame = cellConvertedFrame
+            
+            self.modalPresentationStyle = .currentContext
+            self.leftDragInteractiveTransition.wireToViewController(vc: playVC)
+            
+            present(playVC, animated: true, completion: nil)
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -80,6 +94,20 @@ extension MSVideoListController: UITableViewDataSource,UITableViewDelegate {
     }
 }
 
+extension MSVideoListController: UIViewControllerTransitioningDelegate {
+    
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return self.presentScaleAnimation
+    }
+    
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return self.dismissScaleAnimation
+    }
+    
+    func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        return self.leftDragInteractiveTransition.isInteracting ? self.leftDragInteractiveTransition : nil
+    }
+}
 
 class MSDynamicListCell: UITableViewCell {
     
@@ -125,3 +153,4 @@ class MSDynamicListCell: UITableViewCell {
     }
     
 }
+
