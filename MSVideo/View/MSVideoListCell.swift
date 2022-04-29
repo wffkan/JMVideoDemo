@@ -62,12 +62,17 @@ class MSVideoListCell: UICollectionViewCell {
         return pauseIcon
     }()
     
+    private lazy var thumbnailView: MSVideoThumbnailView = {
+        let view = MSVideoThumbnailView()
+        view.isHidden = true
+        return view
+    }()
     private var musicIcon: UIImageView = UIImageView(image: UIImage(named: "icon_home_musicnote3"))
     
-    private lazy var playerStatusBar: UIView = {
-        let playerStatusBar = UIView(bgColor: .white)
-        playerStatusBar.isHidden = true
-        return playerStatusBar
+    private lazy var loadingLine: MTVideoStatusLoadingView = {
+        let view = MTVideoStatusLoadingView()
+        view.isHidden = true
+        return view
     }()
     
     private var lastTapTime: TimeInterval = 0
@@ -102,6 +107,8 @@ class MSVideoListCell: UICollectionViewCell {
 
     private var isProgressDraging: Bool = false  //是否正处于进度条长按拖动中
     
+    private var isVideoLoading: Bool = false
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .clear
@@ -117,7 +124,7 @@ class MSVideoListCell: UICollectionViewCell {
         container.layer.addSublayer(gradientLayer)
         container.addSubview(pauseIcon)
         
-        container.addSubview(playerStatusBar)
+        container.addSubview(loadingLine)
         container.addSubview(progressIndicator)
         
         musicIcon.contentMode = .center
@@ -173,6 +180,7 @@ class MSVideoListCell: UICollectionViewCell {
         container.addSubview(avatarIcon)
         
         container.addSubview(focus)
+        container.addSubview(thumbnailView)
         
         setupLayout()
         
@@ -182,7 +190,7 @@ class MSVideoListCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         pauseIcon.isHidden = true
-        
+        self.isVideoLoading = false
         avatarIcon.image = UIImage(named: "img_find_default")
         progressIndicator.updateProgess(progress: 0)
 //        musicAlum.resetView()
@@ -208,13 +216,27 @@ class MSVideoListCell: UICollectionViewCell {
     }
     
     func updateProgress(progress: Float) {
-        if self.isProgressDraging {return}
+        if self.isProgressDraging {
+            let duration = Float(MSVideoPlayerManager.duration)
+            self.thumbnailView.update(thumbnail: nil, currentT: Int(duration * progress), totalT: Int(duration))
+            return
+        }
         progressIndicator.updateProgess(progress: progress)
     }
     
     func playStatusChanged(to status: MSVideoPlayerStatus) {
 
         self.pauseIcon.isHidden = (status != .paused)
+        if status == .loadingStart && !self.isProgressDraging {
+                //显示loading
+            self.loadingLine.startLoadingPlayItemAnim()
+            self.progressIndicator.isHidden = true
+            self.isVideoLoading = true
+        }else if status == .loadingEnd {
+            self.loadingLine.startLoadingPlayItemAnim(false)
+            self.progressIndicator.isHidden = false
+            self.isVideoLoading = false
+        }
     }
     
     override func layoutSubviews() {
@@ -227,8 +249,7 @@ class MSVideoListCell: UICollectionViewCell {
         CATransaction.setDisableActions(true)
         gradientLayer.frame = CGRect.init(x: 0, y: self.bounds.height - 500, width: self.bounds.width, height: 500)
         CATransaction.commit()
-        
-        playerStatusBar.frame = CGRect(x: self.bounds.midX - 0.5, y: self.bounds.maxY - 49.5 - UIScreen.safeAreaBottomHeight, width: 1, height: 1)
+        loadingLine.frame = CGRect(x: self.bounds.midX - 0.5, y: self.bounds.maxY - 49.5 - UIScreen.safeAreaBottomHeight, width: 1, height: 1)
     }
     
     private func setupLayout() {
@@ -306,6 +327,12 @@ class MSVideoListCell: UICollectionViewCell {
             make.height.equalTo(2)
             make.bottom.equalToSuperview().offset(-UIScreen.safeAreaBottomHeight - 30)
         }
+        
+        thumbnailView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(progressIndicator.snp.top).offset(-40)
+            make.width.equalToSuperview()
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -326,6 +353,8 @@ extension MSVideoListCell: MSVideoContainerDelegate {
     static var preX: CGFloat = 0
     static var startProgess: Float = 0
     func containerPanGestureHandler(ges: UIPanGestureRecognizer) {
+        
+        if self.isVideoLoading {return}
         switch ges.state {
             case .began:
                 let startPoint = ges.location(in: ges.view)
@@ -337,6 +366,9 @@ extension MSVideoListCell: MSVideoContainerDelegate {
                 delegate?.needToPlayOrPause(pause: true)
             //拖动进度条时，将列表上下滚动禁止
             delegate?.needToStopScroll(stop: true)
+                //清屏
+                cleanScreen(hidden: true)
+                self.thumbnailView.isHidden = false
             case .changed:
                 let point = ges.location(in: ges.view)
                 let offsetX = point.x - MSVideoListCell.preX
@@ -350,6 +382,8 @@ extension MSVideoListCell: MSVideoContainerDelegate {
                 delegate?.needToPlayOrPause(pause: false)
                 //列表禁止滚动解除
                 delegate?.needToStopScroll(stop: false)
+                cleanScreen(hidden: false)
+                self.thumbnailView.isHidden = true
             default:
                 self.progressIndicator.progressType = 0
                 self.isProgressDraging = false
@@ -357,6 +391,8 @@ extension MSVideoListCell: MSVideoContainerDelegate {
                 delegate?.needToPlayOrPause(pause: false)
                 //列表禁止滚动解除
                 delegate?.needToStopScroll(stop: false)
+                cleanScreen(hidden: false)
+                self.thumbnailView.isHidden = true
         }
     }
     
@@ -443,34 +479,25 @@ extension MSVideoListCell {
         }
     }
     
-    func startLoadingPlayItemAnim(_ isStart:Bool = true) {
-        if isStart {
-            playerStatusBar.backgroundColor = ColorWhite
-            playerStatusBar.isHidden = false
-            playerStatusBar.layer.removeAllAnimations()
-            
-            let animationGroup = CAAnimationGroup.init()
-            animationGroup.duration = 0.5
-            animationGroup.beginTime = CACurrentMediaTime()
-            animationGroup.repeatCount = .infinity
-            animationGroup.timingFunction = CAMediaTimingFunction.init(name: CAMediaTimingFunctionName.easeInEaseOut)
-            
-            let scaleAnim = CABasicAnimation.init()
-            scaleAnim.keyPath = "transform.scale.x"
-            scaleAnim.fromValue = 1.0
-            scaleAnim.toValue = 1.0 * UIScreen.width
-            
-            let alphaAnim = CABasicAnimation.init()
-            alphaAnim.keyPath = "opacity"
-            alphaAnim.fromValue = 1.0
-            alphaAnim.toValue = 0.2
-            
-            animationGroup.animations = [scaleAnim, alphaAnim]
-            playerStatusBar.layer.add(animationGroup, forKey: nil)
-        } else {
-            playerStatusBar.layer.removeAllAnimations()
-            playerStatusBar.isHidden = true
+    //拖动进度条时，将屏幕清屏
+    func cleanScreen(hidden: Bool) {
+        UIView.animate(withDuration: 0.25) {
+            self.musicAlum.alpha = hidden ? 0 : 1
+            self.musicIcon.alpha = hidden ? 0 : 1
+            self.avatarIcon.alpha = hidden ? 0 : 1
+            self.favorite.alpha = hidden ? 0 : 1
+            self.favoriteNum.alpha = hidden ? 0 : 1
+            self.commentIcon.alpha = hidden ? 0 : 1
+            self.commentNum.alpha = hidden ? 0 : 1
+            self.shareIcon.alpha = hidden ? 0 : 1
+            self.shareNum.alpha = hidden ? 0 : 1
+            self.nickName.alpha = hidden ? 0 : 1
+            self.desc.alpha = hidden ? 0 : 1
+            self.musicName.alpha = hidden ? 0 : 1
+            self.focus.alpha = hidden ? 0 : 1
+            if let vc = self.currentVC() as? MSVideoPlayController {
+                vc.navView.alpha = hidden ? 0 : 1
+            }
         }
-        
     }
 }

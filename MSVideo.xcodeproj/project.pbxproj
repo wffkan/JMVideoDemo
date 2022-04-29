@@ -58,6 +58,8 @@
 		64548DCB281A3AA600708652 /* twUwD00Su91642907840405.png in Resources */ = {isa = PBXBuildFile; fileRef = 64548DC7281A3AA600708652 /* twUwD00Su91642907840405.png */; };
 		64548DCC281A3AA600708652 /* OGrfF13ESv1643188987894.png in Resources */ = {isa = PBXBuildFile; fileRef = 64548DC8281A3AA600708652 /* OGrfF13ESv1643188987894.png */; };
 		64548DCD281A3AA600708652 /* JEdwrlASqk1643248800977.png in Resources */ = {isa = PBXBuildFile; fileRef = 64548DC9281A3AA600708652 /* JEdwrlASqk1643248800977.png */; };
+		6480D1B1281BBC59001826EE /* MSVideoThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6480D1B0281BBC59001826EE /* MSVideoThumbnailView.swift */; };
+		6480D1B3281BD3A6001826EE /* MTVideoStatusLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6480D1B2281BD3A6001826EE /* MTVideoStatusLoadingView.swift */; };
 		90BEA0B28B541E1B763D9E35 /* Pods_MSVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E17A6DDC22C01FF62CE276FB /* Pods_MSVideo.framework */; };
 /* End PBXBuildFile section */
 
@@ -134,6 +136,8 @@
 		64548DC7281A3AA600708652 /* twUwD00Su91642907840405.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = twUwD00Su91642907840405.png; sourceTree = "<group>"; };
 		64548DC8281A3AA600708652 /* OGrfF13ESv1643188987894.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = OGrfF13ESv1643188987894.png; sourceTree = "<group>"; };
 		64548DC9281A3AA600708652 /* JEdwrlASqk1643248800977.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = JEdwrlASqk1643248800977.png; sourceTree = "<group>"; };
+		6480D1B0281BBC59001826EE /* MSVideoThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSVideoThumbnailView.swift; sourceTree = "<group>"; };
+		6480D1B2281BD3A6001826EE /* MTVideoStatusLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTVideoStatusLoadingView.swift; sourceTree = "<group>"; };
 		6D7002EF2D67C8A68540EB59 /* Pods-MSVideo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSVideo.debug.xcconfig"; path = "Target Support Files/Pods-MSVideo/Pods-MSVideo.debug.xcconfig"; sourceTree = "<group>"; };
 		B83E504690B7932A04762F3D /* Pods-MSVideo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSVideo.release.xcconfig"; path = "Target Support Files/Pods-MSVideo/Pods-MSVideo.release.xcconfig"; sourceTree = "<group>"; };
 		E17A6DDC22C01FF62CE276FB /* Pods_MSVideo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MSVideo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -295,6 +299,8 @@
 			isa = PBXGroup;
 			children = (
 				309486E82813D52B007D0862 /* MSVideoListCell.swift */,
+				6480D1B0281BBC59001826EE /* MSVideoThumbnailView.swift */,
+				6480D1B2281BD3A6001826EE /* MTVideoStatusLoadingView.swift */,
 				64548DC428193AEB00708652 /* MSVideoContainer.swift */,
 				64548DBE28191FED00708652 /* ProgressIndicator.swift */,
 				309486F72813E526007D0862 /* MSPlayView.swift */,
@@ -532,6 +538,7 @@
 				309486DF2813C6E2007D0862 /* MSVideoPlayer.swift in Sources */,
 				3094870C28158814007D0862 /* NSAttributedString+.swift in Sources */,
 				309486BB2813C2B4007D0862 /* BFNavigationController.swift in Sources */,
+				6480D1B3281BD3A6001826EE /* MTVideoStatusLoadingView.swift in Sources */,
 				3094870028142D86007D0862 /* MSVideoViewModel.swift in Sources */,
 				309486D62813C3B4007D0862 /* UIDevice+Ext.swift in Sources */,
 				30948708281587B7007D0862 /* HoverTextView.swift in Sources */,
@@ -545,6 +552,7 @@
 				309486D32813C3B4007D0862 /* MSHelper.swift in Sources */,
 				309486D72813C3B4007D0862 /* UIView+Ext.swift in Sources */,
 				309486D12813C3B4007D0862 /* UIScreen+Ext.swift in Sources */,
+				6480D1B1281BBC59001826EE /* MSVideoThumbnailView.swift in Sources */,
 				64548DC528193AEB00708652 /* MSVideoContainer.swift in Sources */,
 				309486DB2813C476007D0862 /* MSVideoUtils.swift in Sources */,
 				308552F0281AD8AE00B4F9B3 /* DismissScaleAnimation.swift in Sources */,
@@ -730,7 +738,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6N3JSL2D62;
+				DEVELOPMENT_TEAM = WUZZPFNJQ3;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MSVideo/Info.plist;
@@ -761,7 +769,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6N3JSL2D62;
+				DEVELOPMENT_TEAM = WUZZPFNJQ3;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MSVideo/Info.plist;

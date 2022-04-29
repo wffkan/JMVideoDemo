@@ -30,7 +30,7 @@ class MSVideoPlayController: BFBaseViewController {
         return collectionView
     }()
     
-    private lazy var navView: MSNavigationView = {
+    lazy var navView: MSNavigationView = {
         let navView = MSNavigationView(frame: CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.status_navi_height))
         navView.leftButton.setImage(UIImage(named: "nav_back_white"), for: .normal)
         navView.rightButton.setImage(UIImage(named: "more_icon_white"), for: .normal)
@@ -53,8 +53,8 @@ class MSVideoPlayController: BFBaseViewController {
         view.addSubview(collectionView)
         view.addSubview(navView)
 
+        self.collectionView.setContentOffset(CGPoint(x: 0, y: Int(UIScreen.height) * self.needToPlayAtIndex), animated: true)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.collectionView.scrollToItem(at: IndexPath(item: self.needToPlayAtIndex, section: 0), at: .top, animated: false)
             self.startPlayVideo(index: self.needToPlayAtIndex)
         }
     }

@@ -75,6 +75,7 @@ class DragLeftInteractiveTransition: UIPercentDrivenInteractiveTransition {
             self.transitionMaskLayer?.anchorPoint = CGPoint(x: 0.5, y: 0.5)
             self.transitionMaskLayer?.position = CGPoint(x: view.width * 0.5, y: view.height * 0.5)
             view.layer.mask = self.transitionMaskLayer
+            view.layer.cornerRadius = 16
             view.layer.masksToBounds = true
             
             self.isInteracting = true

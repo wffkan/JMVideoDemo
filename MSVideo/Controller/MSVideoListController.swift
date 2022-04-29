@@ -40,6 +40,7 @@ class MSVideoListController: BFBaseViewController {
         
         view.addSubview(tableView)
         tableView.mj_header?.beginRefreshing()
+        self.tabBarController?.tabBar.isHidden = true
     }
     
     private func requestData() {
@@ -53,6 +54,22 @@ class MSVideoListController: BFBaseViewController {
         } fail: { error in
             self.tableView.mj_header?.endRefreshing()
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
     }
 }
 
@@ -78,7 +95,7 @@ extension MSVideoListController: UITableViewDataSource,UITableViewDelegate {
             let cellConvertedFrame = cell.convert(cell.coverImageView.frame, to: tableView.superview)
             
             self.presentScaleAnimation.cellConvertFrame = cellConvertedFrame
-            self.dismissScaleAnimation.selectCell = cell
+            self.dismissScaleAnimation.selectCell = cell.coverImageView
             self.dismissScaleAnimation.finalCellFrame = cellConvertedFrame
             
             self.modalPresentationStyle = .currentContext

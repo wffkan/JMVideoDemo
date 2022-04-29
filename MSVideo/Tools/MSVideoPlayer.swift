@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import AliyunPlayer
+import AVFoundation
 
 
 enum MSVideoPlayerStatus {
@@ -29,6 +30,7 @@ protocol MSVideoPlayerDelegate: NSObjectProtocol {
     func playerStatusChaned(player: MSVideoPlayer,to: MSVideoPlayerStatus)
     
     func playerProgressChanged(player: MSVideoPlayer,currentT: Float,totalT: Float,progress: Float)
+    
 }
 
 class MSVideoPlayer: NSObject {
@@ -39,6 +41,10 @@ class MSVideoPlayer: NSObject {
     
     private override init() {
         super.init()
+        
+        AliListPlayer.setLogCallbackInfo(LOG_LEVEL_ERROR) { level, desc in
+            print("err: \(desc ?? "")")
+        }
         NotificationCenter.default.addObserver(self, selector: #selector(applicationEnterBackground), name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
@@ -80,6 +86,7 @@ class MSVideoPlayer: NSObject {
         player.playerView = self.playView
         let config = AVPConfig()
         config.startBufferDuration = 250  //起播缓冲区时长。单位ms
+        config.enableLocalCache = true
         player.setConfig(config)
         //本地缓存
         let cacheConfig = AVPCacheConfig()
@@ -165,6 +172,13 @@ class MSVideoPlayer: NSObject {
     
     func videoSeek(progress: Float) {
         self.player.seek(toTime: Int64(Float(self.player.duration) * progress), seekMode: AVP_SEEKMODE_ACCURATE)
+    }
+    
+    //获取指定位置的缩略图, 毫秒
+    //缩略图会以异步回调结果返回
+    //不支持mp4视频获取缩略图
+    func getThumbnail(at positionMs: Int) {
+        self.player.getThumbnail(Int64(positionMs))
     }
     
     func videoInfo() -> String {
@@ -253,7 +267,10 @@ extension MSVideoPlayer: AVPDelegate {
     
     //获取track信息回调
     func onTrackReady(_ player: AliPlayer!, info: [AVPTrackInfo]!) {
-        
+//        let mediaInfo = player.getMediaInfo()
+//        if mediaInfo?.thumbnails != nil && mediaInfo?.thumbnails.count > 0 {
+//
+//        }
     }
     
     func onPlayerEvent(_ player: AliPlayer!, eventWithString: AVPEventWithString, description: String!) {
@@ -262,5 +279,12 @@ extension MSVideoPlayer: AVPDelegate {
         }else if eventWithString == EVENT_PLAYER_CACHE_ERROR {
             print("缓存失败事件")
         }
+    }
+    
+    //获取缩略图成功回调
+    func onGetThumbnailSuc(_ positionMs: Int64, fromPos: Int64, toPos: Int64, image: Any!) {
+//        if let thumbnail = image as? UIImage {
+//            delegate?.onGetThumbnailImage(positionMs: Int(positionMs), image: thumbnail)
+//        }
     }
 }

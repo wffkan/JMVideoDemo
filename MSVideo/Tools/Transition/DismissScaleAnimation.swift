@@ -15,7 +15,7 @@ class DismissScaleAnimation: NSObject,UIViewControllerAnimatedTransitioning {
     
     var finalCellFrame: CGRect = .zero
     
-    var selectCell: UITableViewCell?
+    var selectCell: UIView?
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return 0.25
