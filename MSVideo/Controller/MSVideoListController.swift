@@ -88,17 +88,18 @@ extension MSVideoListController: UITableViewDataSource,UITableViewDelegate {
 
         guard let selectCell = tableView.cellForRow(at: indexPath) as? MSDynamicListCell else {return}
         let playVC = MSVideoPlayController()
+        let nav = BFNavigationController(rootViewController: playVC)
         playVC.reloadVideos(datas: self.datas, playAtIndex: indexPath.row)
-        playVC.transitioningDelegate = self
-        playVC.modalPresentationStyle = .overCurrentContext
+        nav.transitioningDelegate = self
+        nav.modalPresentationStyle = .overCurrentContext
         let startFrame = selectCell.contentView.convert(selectCell.coverImageView.frame, to: tableView.superview)
         self.presentScaleAnimation.startFrame = startFrame
         self.dismissScaleAnimation.endView = selectCell.coverImageView
         self.dismissScaleAnimation.endFrame = startFrame
         
         self.modalPresentationStyle = .currentContext
-        self.leftDragInteractiveTransition.wireToViewController(vc: playVC)
-        present(playVC, animated: true, completion: nil)
+        self.leftDragInteractiveTransition.wireToViewController(vc: nav)
+        present(nav, animated: true, completion: nil)
         playVC.playIndexChanged = {[weak self] index in
             if let endCell = self?.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MSDynamicListCell {
                 let endFrame = endCell.contentView.convert(endCell.coverImageView.frame, to: self?.tableView.superview)
