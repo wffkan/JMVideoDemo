@@ -33,18 +33,6 @@ class DragLeftInteractiveTransition: UIPercentDrivenInteractiveTransition {
         }
     }
     
-    override func update(_ percentComplete: CGFloat) {
-        print(percentComplete)
-    }
-    
-    override func cancel() {
-        print("转场取消")
-    }
-    
-    override func finish() {
-        print("转场完成")
-    }
-    
     private func prepareGestureRecognizerInView(view: UIView) {
         let ges = UIPanGestureRecognizer(target: self, action: #selector(handleGesture))
         view.addGestureRecognizer(ges)

@@ -23,6 +23,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window?.rootViewController = BFTabBarController()
         
+        let fpsL = FPSLabel()
+        window?.addSubview(fpsL)
+        
         return true
     }
 

@@ -60,6 +60,8 @@
 		64548DCD281A3AA600708652 /* JEdwrlASqk1643248800977.png in Resources */ = {isa = PBXBuildFile; fileRef = 64548DC9281A3AA600708652 /* JEdwrlASqk1643248800977.png */; };
 		6480D1B1281BBC59001826EE /* MSVideoThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6480D1B0281BBC59001826EE /* MSVideoThumbnailView.swift */; };
 		6480D1B3281BD3A6001826EE /* MTVideoStatusLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6480D1B2281BD3A6001826EE /* MTVideoStatusLoadingView.swift */; };
+		64C5222C282360E300392D09 /* FPSLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C5222B282360E300392D09 /* FPSLabel.swift */; };
+		64C5222E2823BF8C00392D09 /* MSTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C5222D2823BF8C00392D09 /* MSTestController.swift */; };
 		90BEA0B28B541E1B763D9E35 /* Pods_MSVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E17A6DDC22C01FF62CE276FB /* Pods_MSVideo.framework */; };
 /* End PBXBuildFile section */
 
@@ -138,6 +140,8 @@
 		64548DC9281A3AA600708652 /* JEdwrlASqk1643248800977.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = JEdwrlASqk1643248800977.png; sourceTree = "<group>"; };
 		6480D1B0281BBC59001826EE /* MSVideoThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSVideoThumbnailView.swift; sourceTree = "<group>"; };
 		6480D1B2281BD3A6001826EE /* MTVideoStatusLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTVideoStatusLoadingView.swift; sourceTree = "<group>"; };
+		64C5222B282360E300392D09 /* FPSLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FPSLabel.swift; sourceTree = "<group>"; };
+		64C5222D2823BF8C00392D09 /* MSTestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSTestController.swift; sourceTree = "<group>"; };
 		6D7002EF2D67C8A68540EB59 /* Pods-MSVideo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSVideo.debug.xcconfig"; path = "Target Support Files/Pods-MSVideo/Pods-MSVideo.debug.xcconfig"; sourceTree = "<group>"; };
 		B83E504690B7932A04762F3D /* Pods-MSVideo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSVideo.release.xcconfig"; path = "Target Support Files/Pods-MSVideo/Pods-MSVideo.release.xcconfig"; sourceTree = "<group>"; };
 		E17A6DDC22C01FF62CE276FB /* Pods_MSVideo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MSVideo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -272,6 +276,7 @@
 				309486C72813C3B4007D0862 /* MSMcros.swift */,
 				309486C82813C3B4007D0862 /* UIDevice+Ext.swift */,
 				309486C92813C3B4007D0862 /* UIView+Ext.swift */,
+				64C5222B282360E300392D09 /* FPSLabel.swift */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -291,6 +296,7 @@
 			children = (
 				64548DBC281913B400708652 /* MSVideoListController.swift */,
 				309486E42813D3C3007D0862 /* MSVideoPlayController.swift */,
+				64C5222D2823BF8C00392D09 /* MSTestController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -526,6 +532,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				64C5222C282360E300392D09 /* FPSLabel.swift in Sources */,
 				308552EE281AD62B00B4F9B3 /* PresentScaleAnimation.swift in Sources */,
 				3094867C2813C001007D0862 /* AppDelegate.swift in Sources */,
 				308552F2281ADAF400B4F9B3 /* DragLeftInteractiveTransition.swift in Sources */,
@@ -549,6 +556,7 @@
 				309486F22813D7D1007D0862 /* FocusView.swift in Sources */,
 				309486CC2813C3B4007D0862 /* UIImage+Ext.swift in Sources */,
 				309486E52813D3C3007D0862 /* MSVideoPlayController.swift in Sources */,
+				64C5222E2823BF8C00392D09 /* MSTestController.swift in Sources */,
 				309486D32813C3B4007D0862 /* MSHelper.swift in Sources */,
 				309486D72813C3B4007D0862 /* UIView+Ext.swift in Sources */,
 				309486D12813C3B4007D0862 /* UIScreen+Ext.swift in Sources */,

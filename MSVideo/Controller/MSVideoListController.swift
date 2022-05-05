@@ -86,22 +86,28 @@ extension MSVideoListController: UITableViewDataSource,UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
+        guard let selectCell = tableView.cellForRow(at: indexPath) as? MSDynamicListCell else {return}
         let playVC = MSVideoPlayController()
         playVC.reloadVideos(datas: self.datas, playAtIndex: indexPath.row)
         playVC.transitioningDelegate = self
         playVC.modalPresentationStyle = .overCurrentContext
+        let startFrame = selectCell.contentView.convert(selectCell.coverImageView.frame, to: tableView.superview)
+        self.presentScaleAnimation.startFrame = startFrame
+        self.dismissScaleAnimation.endView = selectCell.coverImageView
+        self.dismissScaleAnimation.endFrame = startFrame
         
-        if let cell = tableView.cellForRow(at: indexPath) as? MSDynamicListCell {
-            let cellConvertedFrame = cell.convert(cell.coverImageView.frame, to: tableView.superview)
-            
-            self.presentScaleAnimation.cellConvertFrame = cellConvertedFrame
-            self.dismissScaleAnimation.selectCell = cell.coverImageView
-            self.dismissScaleAnimation.finalCellFrame = cellConvertedFrame
-            
-            self.modalPresentationStyle = .currentContext
-            self.leftDragInteractiveTransition.wireToViewController(vc: playVC)
-            
-            present(playVC, animated: true, completion: nil)
+        self.modalPresentationStyle = .currentContext
+        self.leftDragInteractiveTransition.wireToViewController(vc: playVC)
+        present(playVC, animated: true, completion: nil)
+        playVC.playIndexChanged = {[weak self] index in
+            if let endCell = self?.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MSDynamicListCell {
+                let endFrame = endCell.contentView.convert(endCell.coverImageView.frame, to: self?.tableView.superview)
+                self?.dismissScaleAnimation.endFrame = endFrame
+                self?.dismissScaleAnimation.endView = endCell.coverImageView
+            }else {
+                self?.dismissScaleAnimation.endFrame = .zero
+                self?.dismissScaleAnimation.endView = nil
+            }
         }
     }
     

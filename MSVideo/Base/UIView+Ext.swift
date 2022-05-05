@@ -136,4 +136,20 @@ public extension UIView {
         }
         return nil
     }
+    
+    func snapshotImage() -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(bounds.size, isOpaque, 0)
+        drawHierarchy(in: bounds, afterScreenUpdates: false)
+        let snapshotImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return snapshotImage
+    }
+    
+    func snapshotView() -> UIView? {
+        if let snapshotImage = snapshotImage() {
+            return UIImageView(image: snapshotImage)
+        } else {
+            return nil
+        }
+    }
 }

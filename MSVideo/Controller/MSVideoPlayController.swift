@@ -11,7 +11,7 @@ import UIKit
 
 class MSVideoPlayController: BFBaseViewController {
     
-    var uid: String?
+    var playIndexChanged: ((_ index: Int) -> Void)?
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -89,6 +89,7 @@ class MSVideoPlayController: BFBaseViewController {
     private func startPlayVideo(index: Int) {
         
         self.currentPlaingCell?.updateProgress(progress: 0)
+        MSVideoPlayerManager.playView.isHidden = true
         MSVideoPlayerManager.playView.removeFromSuperview()
         self.currentPlaingCell = nil
         MSVideoPlayerManager.delegate = self
@@ -142,6 +143,7 @@ extension MSVideoPlayController: UICollectionViewDataSource,UICollectionViewDele
         if self.currentPlayIndex != currentIndex {
             MSVideoPlayerManager.playView.isHidden = true
             self.startPlayVideo(index: currentIndex)
+            self.playIndexChanged?(currentIndex)
         }
     }
     
