@@ -35,8 +35,8 @@ class SharePopView: UIView {
         "复制链接",
         "不感兴趣"]
     
-    var container = UIView.init()
-    var cancel = UIButton.init()
+    var container = UIView()
+    var cancel = UIButton()
     
     init() {
         super.init(frame: UIScreen.main.bounds)
@@ -50,7 +50,7 @@ class SharePopView: UIView {
     
     
     func initSubView() {
-        self.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(handleGuesture(sender:))))
+        self.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(handleGuesture)))
         container.frame = CGRect.init(x: 0, y: UIScreen.height, width: UIScreen.width, height: 280 + UIScreen.safeAreaBottomHeight)
         container.backgroundColor = ColorBlackAlpha60
         self.addSubview(container)
@@ -86,7 +86,7 @@ class SharePopView: UIView {
             item.icon.image = UIImage.init(named: topIconsName[index])
             item.label.text = topTexts[index]
             item.tag = index
-            item.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(onShareItemTap(sender:))))
+            item.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(onShareItemTap)))
             item.startAnimation(delayTime: TimeInterval(Double(index) * 0.03))
             topScrollView.addSubview(item)
         }
@@ -102,7 +102,7 @@ class SharePopView: UIView {
             item.icon.image = UIImage.init(named: bottomIconsName[index])
             item.label.text = bottomTexts[index]
             item.tag = index
-            item.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(onActionItemTap(sender:))))
+            item.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(onActionItemTap)))
             item.startAnimation(delayTime: TimeInterval(Double(index) * 0.03))
             bottomScrollView.addSubview(item)
         }
@@ -119,7 +119,7 @@ class SharePopView: UIView {
         let shape2 = CAShapeLayer.init()
         shape2.path = rounded2.cgPath
         cancel.layer.mask = shape2
-        cancel.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(handleGuesture(sender:))))
+        cancel.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(handleGuesture)))
     }
     
     @objc func onShareItemTap(sender:UITapGestureRecognizer) {
@@ -182,8 +182,8 @@ class SharePopView: UIView {
 
 class ShareItem:UIView {
     
-    var icon = UIImageView.init()
-    var label = UILabel.init()
+    var icon = UIImageView()
+    var label = UILabel()
     init() {
         super.init(frame: .zero)
         initSubView()
@@ -225,7 +225,7 @@ class ShareItem:UIView {
     
     func startAnimation(delayTime:TimeInterval) {
         let originalFrame = self.frame
-        self.frame = CGRect.init(origin: CGPoint.init(x: originalFrame.minX, y: 35), size: originalFrame.size)
+        self.frame = CGRect.init(origin: CGPoint.init(x: originalFrame.minX, y: 90), size: originalFrame.size)
         UIView.animate(withDuration: 0.9, delay: delayTime, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.0, options: .curveEaseInOut, animations: {
             self.frame = originalFrame
         }) { finished in

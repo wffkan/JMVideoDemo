@@ -28,13 +28,7 @@ class MSVideoListController: BFBaseViewController {
     }()
     
     private var datas: [MSVideoModel] = []
-    
-    private let presentScaleAnimation: PresentScaleAnimation = PresentScaleAnimation()
-    
-    private let dismissScaleAnimation: DismissScaleAnimation = DismissScaleAnimation()
-    
-    private let leftDragInteractiveTransition: DragLeftInteractiveTransition = DragLeftInteractiveTransition()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -88,48 +82,17 @@ extension MSVideoListController: UITableViewDataSource,UITableViewDelegate {
 
         guard let selectCell = tableView.cellForRow(at: indexPath) as? MSDynamicListCell else {return}
         let playVC = MSVideoPlayController()
-        let nav = BFNavigationController(rootViewController: playVC)
         playVC.reloadVideos(datas: self.datas, playAtIndex: indexPath.row)
-        nav.transitioningDelegate = self
-        nav.modalPresentationStyle = .overCurrentContext
-        let startFrame = selectCell.contentView.convert(selectCell.coverImageView.frame, to: tableView.superview)
-        self.presentScaleAnimation.startFrame = startFrame
-        self.dismissScaleAnimation.endView = selectCell.coverImageView
-        self.dismissScaleAnimation.endFrame = startFrame
-        
-        self.modalPresentationStyle = .currentContext
-        self.leftDragInteractiveTransition.wireToViewController(vc: nav)
-        present(nav, animated: true, completion: nil)
-        playVC.playIndexChanged = {[weak self] index in
-            if let endCell = self?.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MSDynamicListCell {
-                let endFrame = endCell.contentView.convert(endCell.coverImageView.frame, to: self?.tableView.superview)
-                self?.dismissScaleAnimation.endFrame = endFrame
-                self?.dismissScaleAnimation.endView = endCell.coverImageView
-            }else {
-                self?.dismissScaleAnimation.endFrame = .zero
-                self?.dismissScaleAnimation.endView = nil
-            }
+        playVC.show(fromVC: self, startView: selectCell.coverImageView)
+        playVC.resourceViewProvider = {[weak self] index in
+            let endCell = self?.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MSDynamicListCell
+            return endCell?.coverImageView
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let model = self.datas[indexPath.row]
         return model.viewHeight + 30.0
-    }
-}
-
-extension MSVideoListController: UIViewControllerTransitioningDelegate {
-    
-    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        return self.presentScaleAnimation
-    }
-    
-    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        return self.dismissScaleAnimation
-    }
-    
-    func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        return self.leftDragInteractiveTransition.isInteracting ? self.leftDragInteractiveTransition : nil
     }
 }
 

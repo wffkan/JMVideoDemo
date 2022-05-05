@@ -401,10 +401,9 @@ extension MSVideoListCell: MSVideoContainerDelegate {
         switch ges.view?.tag {
         case COMMENT_TAP_ACTION:
 //            CommentsPopView.init(awemeId: "").show()
-                currentVC()?.navigationController?.pushViewController(MSTestController(), animated: true)
             break
         case SHARE_TAP_ACTION:
-            SharePopView.init().show()
+            SharePopView().show()
             break
         default:
             //获取点击坐标，用于设置爱心显示位置

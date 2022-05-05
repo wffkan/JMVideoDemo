@@ -11,7 +11,7 @@ import UIKit
 
 class MSVideoPlayController: BFBaseViewController {
     
-    var playIndexChanged: ((_ index: Int) -> Void)?
+    var resourceViewProvider: ((_ index: Int) -> UIView?)?
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -47,6 +47,12 @@ class MSVideoPlayController: BFBaseViewController {
     
     private var needToPlayAtIndex: Int = 0
     
+    private let presentScaleAnimation: PresentScaleAnimation = PresentScaleAnimation()
+    
+    private let dismissScaleAnimation: DismissScaleAnimation = DismissScaleAnimation()
+    
+    private let leftDragInteractiveTransition: DragLeftInteractiveTransition = DragLeftInteractiveTransition()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
@@ -64,8 +70,18 @@ class MSVideoPlayController: BFBaseViewController {
         self.navigationController?.delegate = self
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.needToPlayOrPause(pause: false)
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.needToPlayOrPause(pause: true)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -77,6 +93,20 @@ class MSVideoPlayController: BFBaseViewController {
         MSVideoPlayerManager.delegate = nil
         MSVideoPlayerManager.cleanList()
         MSVideoPlayerManager.videoDestroy()
+    }
+    
+    func show(fromVC: UIViewController,startView: UIView) {
+        let nav = BFNavigationController(rootViewController: self)
+        nav.transitioningDelegate = self
+        nav.modalPresentationStyle = .overCurrentContext
+        let startFrame = startView.superview!.convert(startView.frame, to: nil)
+        self.presentScaleAnimation.startFrame = startFrame
+        self.dismissScaleAnimation.endView = startView
+        self.dismissScaleAnimation.endFrame = startFrame
+        
+        fromVC.modalPresentationStyle = .currentContext
+        self.leftDragInteractiveTransition.wireToViewController(vc: nav)
+        fromVC.present(nav, animated: true, completion: nil)
     }
     
     func reloadVideos(datas: [MSVideoModel],playAtIndex: Int) {
@@ -129,10 +159,7 @@ extension MSVideoPlayController: UICollectionViewDataSource,UICollectionViewDele
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        let offsetY = scrollView.contentOffset.y
-//        let currentIndex = offsetY / UIScreen.height
-//        print("index: %zd",currentIndex)
-//        self.startPlayVideo(index: currentIndex)
+
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
@@ -143,7 +170,14 @@ extension MSVideoPlayController: UICollectionViewDataSource,UICollectionViewDele
         if self.currentPlayIndex != currentIndex {
             MSVideoPlayerManager.playView.isHidden = true
             self.startPlayVideo(index: currentIndex)
-            self.playIndexChanged?(currentIndex)
+            if let resouceView = self.resourceViewProvider?(currentIndex) {
+                let endFrame = resouceView.superview!.convert(resouceView.frame, to: nil)
+                self.dismissScaleAnimation.endView = resouceView
+                self.dismissScaleAnimation.endFrame = endFrame
+            }else {
+                self.dismissScaleAnimation.endFrame = .zero
+                self.dismissScaleAnimation.endView = nil
+            }
         }
     }
     
@@ -202,5 +236,19 @@ extension MSVideoPlayController: MSVideoListCellDelegate {
     
     func needToStopScroll(stop: Bool) {
         collectionView.isScrollEnabled = !stop
+    }
+}
+
+extension MSVideoPlayController: UIViewControllerTransitioningDelegate {
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return self.presentScaleAnimation
+    }
+    
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return self.dismissScaleAnimation
+    }
+    
+    func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        return self.leftDragInteractiveTransition.isInteracting ? self.leftDragInteractiveTransition : nil
     }
 }

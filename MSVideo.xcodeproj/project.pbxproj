@@ -61,7 +61,6 @@
 		6480D1B1281BBC59001826EE /* MSVideoThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6480D1B0281BBC59001826EE /* MSVideoThumbnailView.swift */; };
 		6480D1B3281BD3A6001826EE /* MTVideoStatusLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6480D1B2281BD3A6001826EE /* MTVideoStatusLoadingView.swift */; };
 		64C5222C282360E300392D09 /* FPSLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C5222B282360E300392D09 /* FPSLabel.swift */; };
-		64C5222E2823BF8C00392D09 /* MSTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C5222D2823BF8C00392D09 /* MSTestController.swift */; };
 		90BEA0B28B541E1B763D9E35 /* Pods_MSVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E17A6DDC22C01FF62CE276FB /* Pods_MSVideo.framework */; };
 /* End PBXBuildFile section */
 
@@ -141,7 +140,6 @@
 		6480D1B0281BBC59001826EE /* MSVideoThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSVideoThumbnailView.swift; sourceTree = "<group>"; };
 		6480D1B2281BD3A6001826EE /* MTVideoStatusLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTVideoStatusLoadingView.swift; sourceTree = "<group>"; };
 		64C5222B282360E300392D09 /* FPSLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FPSLabel.swift; sourceTree = "<group>"; };
-		64C5222D2823BF8C00392D09 /* MSTestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSTestController.swift; sourceTree = "<group>"; };
 		6D7002EF2D67C8A68540EB59 /* Pods-MSVideo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSVideo.debug.xcconfig"; path = "Target Support Files/Pods-MSVideo/Pods-MSVideo.debug.xcconfig"; sourceTree = "<group>"; };
 		B83E504690B7932A04762F3D /* Pods-MSVideo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSVideo.release.xcconfig"; path = "Target Support Files/Pods-MSVideo/Pods-MSVideo.release.xcconfig"; sourceTree = "<group>"; };
 		E17A6DDC22C01FF62CE276FB /* Pods_MSVideo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MSVideo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -296,7 +294,6 @@
 			children = (
 				64548DBC281913B400708652 /* MSVideoListController.swift */,
 				309486E42813D3C3007D0862 /* MSVideoPlayController.swift */,
-				64C5222D2823BF8C00392D09 /* MSTestController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -556,7 +553,6 @@
 				309486F22813D7D1007D0862 /* FocusView.swift in Sources */,
 				309486CC2813C3B4007D0862 /* UIImage+Ext.swift in Sources */,
 				309486E52813D3C3007D0862 /* MSVideoPlayController.swift in Sources */,
-				64C5222E2823BF8C00392D09 /* MSTestController.swift in Sources */,
 				309486D32813C3B4007D0862 /* MSHelper.swift in Sources */,
 				309486D72813C3B4007D0862 /* UIView+Ext.swift in Sources */,
 				309486D12813C3B4007D0862 /* UIScreen+Ext.swift in Sources */,
@@ -746,7 +742,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = WUZZPFNJQ3;
+				DEVELOPMENT_TEAM = 6N3JSL2D62;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MSVideo/Info.plist;
@@ -777,7 +773,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = WUZZPFNJQ3;
+				DEVELOPMENT_TEAM = 6N3JSL2D62;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MSVideo/Info.plist;

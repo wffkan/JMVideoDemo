@@ -37,7 +37,6 @@ class DismissScaleAnimation: NSObject,UIViewControllerAnimatedTransitioning {
             scaleRatio = fromVC.view.width / UIScreen.width
             finalFrame = centerFrame
         }
-        
         let containerView = transitionContext.containerView
         containerView.addSubview(snapshotView)
         
@@ -49,7 +48,7 @@ class DismissScaleAnimation: NSObject,UIViewControllerAnimatedTransitioning {
             
             snapshotView.transform = .identity
             snapshotView.frame = finalFrame
-        } completion: { _ in
+        } completion: {_ in
             transitionContext.finishInteractiveTransition()
             transitionContext.completeTransition(true)
             snapshotView.removeFromSuperview()
