@@ -210,15 +210,13 @@ class MSVideoListCell: UICollectionViewCell {
             let coverUrl = model.coverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
             self.bgImageView.kf.setImage(with: URL(string: coverUrl))
         }else {
-            let coverUrl = Bundle.main.path(forResource: model.coverUrl, ofType: "png") ?? ""
+            let coverUrl = Bundle.main.path(forResource: model.coverUrl, ofType: nil) ?? ""
             self.bgImageView.kf.setImage(with: URL(fileURLWithPath: coverUrl))
         }
     }
     
     func updateProgress(progress: Float) {
         if self.isProgressDraging {
-            let duration = Float(MSVideoPlayerManager.duration)
-            self.thumbnailView.update(thumbnail: nil, currentT: Int(duration * progress), totalT: Int(duration))
             return
         }
         progressIndicator.updateProgess(progress: progress)
@@ -363,7 +361,6 @@ extension MSVideoListCell: MSVideoContainerDelegate {
                 MSVideoListCell.startProgess = self.progressIndicator.progress
                 //先暂停
                 self.isProgressDraging = true
-                delegate?.needToPlayOrPause(pause: true)
             //拖动进度条时，将列表上下滚动禁止
             delegate?.needToStopScroll(stop: true)
                 //清屏
@@ -374,12 +371,17 @@ extension MSVideoListCell: MSVideoContainerDelegate {
                 let offsetX = point.x - MSVideoListCell.preX
                 let n_progress = MSVideoListCell.startProgess + Float(offsetX / self.progressIndicator.width)
                 self.progressIndicator.updateProgess(progress: n_progress, animated: false)
-                delegate?.needToSeek(to: n_progress)
+                let duration = Float(MSVideoPlayerManager.duration)
+                self.thumbnailView.update(thumbnail: nil, currentT: Int(duration * n_progress), totalT: Int(duration))
+                
             case .ended:
                 self.progressIndicator.progressType = 0
                 self.isProgressDraging = false
-                //继续播放
-                delegate?.needToPlayOrPause(pause: false)
+                
+                let point = ges.location(in: ges.view)
+                let offsetX = point.x - MSVideoListCell.preX
+                let n_progress = MSVideoListCell.startProgess + Float(offsetX / self.progressIndicator.width)
+                delegate?.needToSeek(to: n_progress)
                 //列表禁止滚动解除
                 delegate?.needToStopScroll(stop: false)
                 cleanScreen(hidden: false)
@@ -387,8 +389,6 @@ extension MSVideoListCell: MSVideoContainerDelegate {
             default:
                 self.progressIndicator.progressType = 0
                 self.isProgressDraging = false
-                //继续播放
-                delegate?.needToPlayOrPause(pause: false)
                 //列表禁止滚动解除
                 delegate?.needToStopScroll(stop: false)
                 cleanScreen(hidden: false)

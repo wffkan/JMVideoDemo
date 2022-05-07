@@ -125,7 +125,7 @@ class MSDynamicListCell: UITableViewCell {
                     let coverUrl = model.coverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
                     coverImageView.kf.setImage(with: URL(string: coverUrl))
                 }else {
-                    let coverUrl = Bundle.main.path(forResource: model.coverUrl, ofType: "png") ?? ""
+                    let coverUrl = Bundle.main.path(forResource: model.coverUrl, ofType: nil) ?? ""
                     coverImageView.kf.setImage(with: URL(fileURLWithPath: coverUrl))
                 }
                 coverImageView.frame = CGRect(x: 15, y: 15, width: 200, height: model.viewHeight)

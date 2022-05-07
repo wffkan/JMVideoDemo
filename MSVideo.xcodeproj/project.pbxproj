@@ -49,6 +49,7 @@
 		30948708281587B7007D0862 /* HoverTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30948707281587B7007D0862 /* HoverTextView.swift */; };
 		3094870A281587F6007D0862 /* Notification+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30948709281587F6007D0862 /* Notification+.swift */; };
 		3094870C28158814007D0862 /* NSAttributedString+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3094870B28158814007D0862 /* NSAttributedString+.swift */; };
+		644A8D99282610640040D414 /* 2c6430e9382244c9bb14f7293a3990d5.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 644A8D98282610640040D414 /* 2c6430e9382244c9bb14f7293a3990d5.jpg */; };
 		64548DBB2818E4FC00708652 /* video.json in Resources */ = {isa = PBXBuildFile; fileRef = 64548DBA2818E4FC00708652 /* video.json */; };
 		64548DBD281913B400708652 /* MSVideoListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64548DBC281913B400708652 /* MSVideoListController.swift */; };
 		64548DBF28191FED00708652 /* ProgressIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64548DBE28191FED00708652 /* ProgressIndicator.swift */; };
@@ -128,6 +129,7 @@
 		30948707281587B7007D0862 /* HoverTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoverTextView.swift; sourceTree = "<group>"; };
 		30948709281587F6007D0862 /* Notification+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Notification+.swift"; sourceTree = "<group>"; };
 		3094870B28158814007D0862 /* NSAttributedString+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+.swift"; sourceTree = "<group>"; };
+		644A8D98282610640040D414 /* 2c6430e9382244c9bb14f7293a3990d5.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 2c6430e9382244c9bb14f7293a3990d5.jpg; sourceTree = "<group>"; };
 		64548DBA2818E4FC00708652 /* video.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = video.json; sourceTree = "<group>"; };
 		64548DBC281913B400708652 /* MSVideoListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSVideoListController.swift; sourceTree = "<group>"; };
 		64548DBE28191FED00708652 /* ProgressIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressIndicator.swift; sourceTree = "<group>"; };
@@ -329,6 +331,7 @@
 				64548DC6281A3AA600708652 /* me7pTYYoYT1643190279286.png */,
 				64548DC8281A3AA600708652 /* OGrfF13ESv1643188987894.png */,
 				64548DC7281A3AA600708652 /* twUwD00Su91642907840405.png */,
+				644A8D98282610640040D414 /* 2c6430e9382244c9bb14f7293a3990d5.jpg */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -461,6 +464,7 @@
 				64548DCA281A3AA600708652 /* me7pTYYoYT1643190279286.png in Resources */,
 				64548DBB2818E4FC00708652 /* video.json in Resources */,
 				309486882813C003007D0862 /* LaunchScreen.storyboard in Resources */,
+				644A8D99282610640040D414 /* 2c6430e9382244c9bb14f7293a3990d5.jpg in Resources */,
 				64548DCC281A3AA600708652 /* OGrfF13ESv1643188987894.png in Resources */,
 				309486852813C003007D0862 /* Assets.xcassets in Resources */,
 			);
@@ -742,7 +746,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6N3JSL2D62;
+				DEVELOPMENT_TEAM = WUZZPFNJQ3;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MSVideo/Info.plist;
@@ -773,7 +777,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6N3JSL2D62;
+				DEVELOPMENT_TEAM = WUZZPFNJQ3;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MSVideo/Info.plist;

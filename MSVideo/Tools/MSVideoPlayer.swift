@@ -43,7 +43,7 @@ class MSVideoPlayer: NSObject {
         super.init()
         
         AliListPlayer.setLogCallbackInfo(LOG_LEVEL_ERROR) { level, desc in
-            print("err: \(desc ?? "")")
+//            print("err: \(desc ?? "")")
         }
         NotificationCenter.default.addObserver(self, selector: #selector(applicationEnterBackground), name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
