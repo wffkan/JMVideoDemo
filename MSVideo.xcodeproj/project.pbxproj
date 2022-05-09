@@ -41,7 +41,6 @@
 		309486F02813D75C007D0862 /* CircleTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486EF2813D75C007D0862 /* CircleTextView.swift */; };
 		309486F22813D7D1007D0862 /* FocusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486F12813D7D1007D0862 /* FocusView.swift */; };
 		309486F42813D801007D0862 /* MusicAlbumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486F32813D801007D0862 /* MusicAlbumView.swift */; };
-		309486F62813D839007D0862 /* FavoriteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486F52813D839007D0862 /* FavoriteView.swift */; };
 		309486F82813E526007D0862 /* MSPlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486F72813E526007D0862 /* MSPlayView.swift */; };
 		3094870028142D86007D0862 /* MSVideoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486FF28142D86007D0862 /* MSVideoViewModel.swift */; };
 		30948704281585FE007D0862 /* SharePopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30948703281585FE007D0862 /* SharePopView.swift */; };
@@ -50,6 +49,7 @@
 		3094870A281587F6007D0862 /* Notification+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30948709281587F6007D0862 /* Notification+.swift */; };
 		3094870C28158814007D0862 /* NSAttributedString+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3094870B28158814007D0862 /* NSAttributedString+.swift */; };
 		644A8D99282610640040D414 /* 2c6430e9382244c9bb14f7293a3990d5.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 644A8D98282610640040D414 /* 2c6430e9382244c9bb14f7293a3990d5.jpg */; };
+		644A8DA3282912630040D414 /* MTVideoRightToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 644A8DA2282912630040D414 /* MTVideoRightToolsView.swift */; };
 		64548DBB2818E4FC00708652 /* video.json in Resources */ = {isa = PBXBuildFile; fileRef = 64548DBA2818E4FC00708652 /* video.json */; };
 		64548DBD281913B400708652 /* MSVideoListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64548DBC281913B400708652 /* MSVideoListController.swift */; };
 		64548DBF28191FED00708652 /* ProgressIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64548DBE28191FED00708652 /* ProgressIndicator.swift */; };
@@ -121,7 +121,6 @@
 		309486EF2813D75C007D0862 /* CircleTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleTextView.swift; sourceTree = "<group>"; };
 		309486F12813D7D1007D0862 /* FocusView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FocusView.swift; sourceTree = "<group>"; };
 		309486F32813D801007D0862 /* MusicAlbumView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MusicAlbumView.swift; sourceTree = "<group>"; };
-		309486F52813D839007D0862 /* FavoriteView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoriteView.swift; sourceTree = "<group>"; };
 		309486F72813E526007D0862 /* MSPlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPlayView.swift; sourceTree = "<group>"; };
 		309486FF28142D86007D0862 /* MSVideoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSVideoViewModel.swift; sourceTree = "<group>"; };
 		30948703281585FE007D0862 /* SharePopView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharePopView.swift; sourceTree = "<group>"; };
@@ -130,6 +129,7 @@
 		30948709281587F6007D0862 /* Notification+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Notification+.swift"; sourceTree = "<group>"; };
 		3094870B28158814007D0862 /* NSAttributedString+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+.swift"; sourceTree = "<group>"; };
 		644A8D98282610640040D414 /* 2c6430e9382244c9bb14f7293a3990d5.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 2c6430e9382244c9bb14f7293a3990d5.jpg; sourceTree = "<group>"; };
+		644A8DA2282912630040D414 /* MTVideoRightToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTVideoRightToolsView.swift; sourceTree = "<group>"; };
 		64548DBA2818E4FC00708652 /* video.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = video.json; sourceTree = "<group>"; };
 		64548DBC281913B400708652 /* MSVideoListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSVideoListController.swift; sourceTree = "<group>"; };
 		64548DBE28191FED00708652 /* ProgressIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressIndicator.swift; sourceTree = "<group>"; };
@@ -304,6 +304,7 @@
 			isa = PBXGroup;
 			children = (
 				309486E82813D52B007D0862 /* MSVideoListCell.swift */,
+				644A8DA2282912630040D414 /* MTVideoRightToolsView.swift */,
 				6480D1B0281BBC59001826EE /* MSVideoThumbnailView.swift */,
 				6480D1B2281BD3A6001826EE /* MTVideoStatusLoadingView.swift */,
 				64548DC428193AEB00708652 /* MSVideoContainer.swift */,
@@ -312,7 +313,6 @@
 				309486EF2813D75C007D0862 /* CircleTextView.swift */,
 				309486F12813D7D1007D0862 /* FocusView.swift */,
 				309486F32813D801007D0862 /* MusicAlbumView.swift */,
-				309486F52813D839007D0862 /* FavoriteView.swift */,
 				30948703281585FE007D0862 /* SharePopView.swift */,
 				309487052815860A007D0862 /* CommentsPopView.swift */,
 				30948707281587B7007D0862 /* HoverTextView.swift */,
@@ -566,11 +566,11 @@
 				308552F0281AD8AE00B4F9B3 /* DismissScaleAnimation.swift in Sources */,
 				309486D52813C3B4007D0862 /* MSMcros.swift in Sources */,
 				64548DC32819332900708652 /* MSNavigationView.swift in Sources */,
+				644A8DA3282912630040D414 /* MTVideoRightToolsView.swift in Sources */,
 				309486F42813D801007D0862 /* MusicAlbumView.swift in Sources */,
 				309486AE2813C28C007D0862 /* NetWorkManager.swift in Sources */,
 				309486B82813C2B4007D0862 /* BFBaseViewController.swift in Sources */,
 				64548DBF28191FED00708652 /* ProgressIndicator.swift in Sources */,
-				309486F62813D839007D0862 /* FavoriteView.swift in Sources */,
 				309487062815860A007D0862 /* CommentsPopView.swift in Sources */,
 				309486D22813C3B4007D0862 /* UIColor+Ext.swift in Sources */,
 				309486CD2813C3B4007D0862 /* Date+Ext.swift in Sources */,

@@ -11,13 +11,20 @@ import UIKit
 class ProgressIndicator: UIView {
     
     private lazy var bgLine: UIView = {
-        let view = UIView(bgColor: UIColor.white.withAlphaComponent(0.3))
+        let view = UIView(bgColor: UIColor(hex: "#4F4F4F"))
         return view
     }()
     
     private lazy var progressLine: UIView = {
-        let view = UIView(bgColor: UIColor.white.withAlphaComponent(0.6))
+        let view = UIView(bgColor: UIColor.white.withAlphaComponent(0.8))
         view.frame = CGRect(x: 0, y: 0, width: 0, height: 2)
+        return view
+    }()
+    
+    private lazy var dotView: UIView = {
+        let view = UIView(bgColor: .white)
+        view.frame = CGRect(x: 0, y: -2, width: 6, height: 6)
+        view.layer.cornerRadius = 3
         return view
     }()
     
@@ -32,19 +39,23 @@ class ProgressIndicator: UIView {
                 }
                 UIView.animate(withDuration: 0.25) {
                     self.superview?.layoutIfNeeded()
-                    self.progressLine.backgroundColor = UIColor.white.withAlphaComponent(0.6)
                     self.progressLine.height = 2
                     self.progressLine.layer.cornerRadius = 0
+                    self.dotView.width = 6
+                    self.dotView.height = 6
+                    self.dotView.center = CGPoint(x: self.progressLine.right, y: self.progressLine.centerY)
                 }
             }else {
                 self.snp.updateConstraints { make in
-                    make.height.equalTo(8)
+                    make.height.equalTo(10)
                 }
                 UIView.animate(withDuration: 0.25) {
                     self.superview?.layoutIfNeeded()
-                    self.progressLine.backgroundColor = .white
-                    self.progressLine.height = 8
-                    self.progressLine.layer.cornerRadius = 4
+                    self.progressLine.height = 10
+                    self.progressLine.layer.cornerRadius = 5
+                    self.dotView.width = 12
+                    self.dotView.height = 20
+                    self.dotView.center = CGPoint(x: self.progressLine.right, y: self.progressLine.centerY)
                 }
             }
         }
@@ -55,6 +66,7 @@ class ProgressIndicator: UIView {
         
         addSubview(bgLine)
         bgLine.addSubview(progressLine)
+        bgLine.addSubview(dotView)
     }
     
     func updateProgess(progress: Float,animated: Bool = true) {
@@ -65,7 +77,8 @@ class ProgressIndicator: UIView {
 //                self.progress = progress
 //            }
 //        }else {
-            self.progressLine.width = self.width * CGFloat(self.progress)
+            self.progressLine.width = self.width * CGFloat(progress)
+            self.dotView.center = CGPoint(x: self.progressLine.right, y: self.progressLine.centerY)
             self.progress = progress
 //        }
     }

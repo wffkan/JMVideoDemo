@@ -59,7 +59,7 @@ class MSVideoContainer: UIView,UIGestureRecognizerDelegate {
         let startPoint = gestureRecognizer.location(in: gestureRecognizer.view)
         if gestureRecognizer === self.panGesture {
             //如果拖动的区域在进度条周边范围内，放大进度条利于用户拖动
-            if startPoint.y > self.bottom - UIScreen.safeAreaBottomHeight - 30 + 25 || startPoint.y < self.bottom - UIScreen.safeAreaBottomHeight - 30 - 2 - 25 {
+            if startPoint.y > self.bottom - UIScreen.safeAreaBottomHeight - 46 + 25 || startPoint.y < self.bottom - UIScreen.safeAreaBottomHeight - 46 - 2 - 25 {
                 return false
             }
         }

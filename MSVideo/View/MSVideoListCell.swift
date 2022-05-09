@@ -12,10 +12,10 @@ import Kingfisher
 
 
 
-let LIKE_BEFORE_TAP_ACTION:Int = 1000
-let LIKE_AFTER_TAP_ACTION:Int = 2000
+let PRAISE_TAP_ACTION:Int = 2000
 let COMMENT_TAP_ACTION:Int = 3000
 let SHARE_TAP_ACTION:Int = 4000
+let COLLECT_TAP_ACTION:Int = 5000
 
 protocol MSVideoListCellDelegate: NSObjectProtocol {
     
@@ -67,41 +67,15 @@ class MSVideoListCell: UICollectionViewCell {
         view.isHidden = true
         return view
     }()
-    private var musicIcon: UIImageView = UIImageView(image: UIImage(named: "icon_home_musicnote3"))
-    
-    private lazy var loadingLine: MTVideoStatusLoadingView = {
-        let view = MTVideoStatusLoadingView()
-        view.isHidden = true
+    private lazy var rightToolsView: MTVideoRightToolsView = {
+        let view = MTVideoRightToolsView()
+        view.delegate = self
         return view
     }()
     
     private var lastTapTime: TimeInterval = 0
     
     private var lastTapPoint: CGPoint = .zero
-    
-    private var musicName: CircleTextView = CircleTextView()
-    
-    private var desc: UILabel = UILabel()
-    
-    private var nickName: UILabel = UILabel()
-    
-    private var avatarIcon: UIImageView = UIImageView(image: UIImage(named: "img_find_default"))
-    
-    private var focus: FocusView = FocusView()
-    
-    private var musicAlum: MusicAlbumView = MusicAlbumView()
-    
-    private var shareIcon: UIImageView = UIImageView(image: UIImage(named: "icon_home_share"))
-    
-    private var commentIcon: UIImageView = UIImageView(image: UIImage(named: "icon_home_comment"))
-    
-    private var favorite: FavoriteView = FavoriteView()
-    
-    private var shareNum: UILabel = UILabel()
-    
-    private var commentNum: UILabel = UILabel()
-    
-    private var favoriteNum: UILabel = UILabel()
     
     private var progressIndicator = ProgressIndicator()
 
@@ -124,88 +98,25 @@ class MSVideoListCell: UICollectionViewCell {
         container.layer.addSublayer(gradientLayer)
         container.addSubview(pauseIcon)
         
-        container.addSubview(loadingLine)
+        container.addSubview(rightToolsView)
         container.addSubview(progressIndicator)
-        
-        musicIcon.contentMode = .center
-        container.addSubview(musicIcon)
-        
-        musicName.textColor = ColorWhite
-        musicName.font = MediumFont
-        container.addSubview(musicName)
-        
-        desc.numberOfLines = 0
-        desc.textColor = ColorWhiteAlpha80
-        desc.font = MediumFont
-        container.addSubview(desc)
-        
-        nickName.textColor = ColorWhite
-        nickName.font = BigBoldFont
-        container.addSubview(nickName)
-        
-        container.addSubview(musicAlum)
-        
-        shareIcon.contentMode = .center
-        shareIcon.isUserInteractionEnabled = true
-        shareIcon.tag = SHARE_TAP_ACTION
-        shareIcon.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(handleGesture)))
-        container.addSubview(shareIcon)
-        
-        shareNum.text = "0"
-        shareNum.textColor = ColorWhite
-        shareNum.font = SmallFont
-        container.addSubview(shareNum)
-        
-        commentIcon.contentMode = .center
-        commentIcon.isUserInteractionEnabled = true
-        commentIcon.tag = COMMENT_TAP_ACTION
-        commentIcon.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(handleGesture)))
-        container.addSubview(commentIcon)
-        
-        commentNum.text = "0"
-        commentNum.textColor = ColorWhite
-        commentNum.font = SmallFont
-        container.addSubview(commentNum)
-        
-        container.addSubview(favorite)
-        
-        favoriteNum.text = "0"
-        favoriteNum.textColor = ColorWhite
-        favoriteNum.font = SmallFont
-        container.addSubview(favoriteNum)
-        
-        avatarIcon.layer.cornerRadius = 25
-        avatarIcon.layer.borderColor = ColorWhiteAlpha80.cgColor
-        avatarIcon.layer.borderWidth = 1
-        container.addSubview(avatarIcon)
-        
-        container.addSubview(focus)
         container.addSubview(thumbnailView)
         
         setupLayout()
-        
-        musicAlum.startAnimation(rate: 0)
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         pauseIcon.isHidden = true
         self.isVideoLoading = false
-        avatarIcon.image = UIImage(named: "img_find_default")
+        
         progressIndicator.updateProgess(progress: 0)
-//        musicAlum.resetView()
-        favorite.resetView()
-        focus.resetView()
+        rightToolsView.prepareForReuse()
     }
     
     func reloadData(model: MSVideoModel) {
         self.videoModel = model
-        nickName.text = "@人生如戏"
-        desc.text = "开心就好宠粉狂魔～\n过儿小狮妹\n衣服 @过儿小狮妹"
-        musicName.text = "谁还不是个宝宝（我小嘴像樱桃 撅起嘴角身你笑）"
-        favoriteNum.text = String.formatCount(count: 58)
-        commentNum.text = String.formatCount(count: 12)
-        shareNum.text = String.formatCount(count: 66)
+        rightToolsView.model = model
         if model.coverUrl.hasPrefix("http") {
             let coverUrl = model.coverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
             self.bgImageView.kf.setImage(with: URL(string: coverUrl))
@@ -226,12 +137,10 @@ class MSVideoListCell: UICollectionViewCell {
 
         self.pauseIcon.isHidden = (status != .paused)
         if status == .loadingStart && !self.isProgressDraging {
-                //显示loading
-            self.loadingLine.startLoadingPlayItemAnim()
+
             self.progressIndicator.isHidden = true
             self.isVideoLoading = true
         }else if status == .loadingEnd {
-            self.loadingLine.startLoadingPlayItemAnim(false)
             self.progressIndicator.isHidden = false
             self.isVideoLoading = false
         }
@@ -247,89 +156,61 @@ class MSVideoListCell: UICollectionViewCell {
         CATransaction.setDisableActions(true)
         gradientLayer.frame = CGRect.init(x: 0, y: self.bounds.height - 500, width: self.bounds.width, height: 500)
         CATransaction.commit()
-        loadingLine.frame = CGRect(x: self.bounds.midX - 0.5, y: self.bounds.maxY - 49.5 - UIScreen.safeAreaBottomHeight, width: 1, height: 1)
     }
     
     private func setupLayout() {
-        musicIcon.snp.makeConstraints { make in
-            make.left.equalTo(self)
-            make.bottom.equalTo(self).inset(60 + UIScreen.safeAreaBottomHeight)
-            make.width.equalTo(30)
-            make.height.equalTo(25)
-        }
 
-        musicName.snp.makeConstraints { make in
-            make.left.equalTo(self.musicIcon.snp.right)
-            make.centerY.equalTo(self.musicIcon)
-            make.width.equalTo(UIScreen.width / 2)
-            make.height.equalTo(20)
-        }
-        desc.snp.makeConstraints { make in
-            make.left.equalTo(self).offset(10)
-            make.bottom.equalTo(self.musicIcon.snp.top).inset(-5)
-            make.width.lessThanOrEqualTo(UIScreen.width / 5 * 3)
-        }
-        nickName.snp.makeConstraints { make in
-            make.left.equalTo(self).offset(10)
-            make.bottom.equalTo(self.desc.snp.top).inset(-5)
-            make.width.lessThanOrEqualTo(UIScreen.width / 4 * 3 + 30)
-        }
-        musicAlum.snp.makeConstraints { make in
-            make.bottom.equalTo(self.musicName)
-            make.right.equalTo(self).inset(10)
-            make.width.height.equalTo(50)
-        }
-        shareIcon.snp.makeConstraints { make in
-            make.bottom.equalTo(self.musicAlum.snp.top).inset(-50)
-            make.right.equalTo(self).inset(10)
-            make.width.equalTo(50)
-            make.height.equalTo(45)
-        }
-        shareNum.snp.makeConstraints { make in
-            make.top.equalTo(self.shareIcon.snp.bottom);
-            make.centerX.equalTo(self.shareIcon);
-        }
-        commentIcon.snp.makeConstraints { make in
-            make.bottom.equalTo(self.shareIcon.snp.top).inset(-25);
-            make.right.equalTo(self).inset(10);
-            make.width.equalTo(50);
-            make.height.equalTo(45);
-        }
-        commentNum.snp.makeConstraints { make in
-            make.top.equalTo(self.commentIcon.snp.bottom);
-            make.centerX.equalTo(self.commentIcon);
-        }
-        favorite.snp.makeConstraints { make in
-            make.bottom.equalTo(self.commentIcon.snp.top).inset(-25);
-            make.right.equalTo(self).inset(10);
-            make.width.equalTo(50);
-            make.height.equalTo(45);
-        }
-        favoriteNum.snp.makeConstraints { make in
-            make.top.equalTo(self.favorite.snp.bottom);
-            make.centerX.equalTo(self.favorite);
-        }
-        let avatarRadius:CGFloat = 25;
-        avatarIcon.snp.makeConstraints { make in
-            make.bottom.equalTo(self.favorite.snp.top).inset(-35);
-            make.right.equalTo(self).inset(10);
-            make.width.height.equalTo(avatarRadius*2);
-        }
-        focus.snp.makeConstraints { make in
-            make.centerX.equalTo(self.avatarIcon);
-            make.centerY.equalTo(self.avatarIcon.snp.bottom);
-            make.width.height.equalTo(24);
+        rightToolsView.snp.makeConstraints { make in
+            make.width.equalTo(38)
+            make.right.equalToSuperview().offset(-17)
+            make.bottom.equalTo(progressIndicator.snp.top).offset(-60)
         }
         progressIndicator.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
             make.height.equalTo(2)
-            make.bottom.equalToSuperview().offset(-UIScreen.safeAreaBottomHeight - 30)
+            make.bottom.equalToSuperview().offset(-UIScreen.safeAreaBottomHeight - 46)
         }
         
         thumbnailView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(progressIndicator.snp.top).offset(-40)
+            make.bottom.equalTo(progressIndicator.snp.top).offset(-67)
             make.width.equalToSuperview()
+        }
+    }
+    
+    func handleGesture(ges: UITapGestureRecognizer) {
+        
+        switch ges.view?.tag {
+        case COMMENT_TAP_ACTION:
+//            CommentsPopView.init(awemeId: "").show()
+            break
+        case SHARE_TAP_ACTION:
+            SharePopView().show()
+            break
+        case COLLECT_TAP_ACTION:
+            break
+        case PRAISE_TAP_ACTION:
+            break
+        default:
+            //获取点击坐标，用于设置爱心显示位置
+            let point = ges.location(in: container)
+            //获取当前时间
+            let time = CACurrentMediaTime()
+            //判断当前点击时间与上次点击时间的时间间隔
+            if (time - lastTapTime) > 0.25 {
+                //推迟0.25秒执行单击方法
+                self.perform(#selector(singleTapAction), with: nil, afterDelay: 0.25)
+            } else {
+                //取消执行单击方法
+                NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(singleTapAction), object: nil)
+                //执行连击显示爱心的方法
+//                showLikeViewAnim(newPoint: point, oldPoint: lastTapPoint)
+            }
+            //更新上一次点击位置
+            lastTapPoint = point
+            //更新上一次点击时间
+            lastTapTime = time
+            break
         }
     }
     
@@ -341,7 +222,7 @@ class MSVideoListCell: UICollectionViewCell {
 extension MSVideoListCell: MSVideoContainerDelegate {
     
     func containerTapGestureHandler(ges: UITapGestureRecognizer) {
-        self.handleGesture(ges: ges)
+        handleGesture(ges: ges)
     }
     
     func containerLongGestureHandler(ges: UILongPressGestureRecognizer) {
@@ -369,7 +250,9 @@ extension MSVideoListCell: MSVideoContainerDelegate {
             case .changed:
                 let point = ges.location(in: ges.view)
                 let offsetX = point.x - MSVideoListCell.preX
-                let n_progress = MSVideoListCell.startProgess + Float(offsetX / self.progressIndicator.width)
+                var n_progress = MSVideoListCell.startProgess + Float(offsetX / self.progressIndicator.width)
+                n_progress = max(n_progress, 0)
+                n_progress = min(n_progress, 1)
                 self.progressIndicator.updateProgess(progress: n_progress, animated: false)
                 let duration = Float(MSVideoPlayerManager.duration)
                 self.thumbnailView.update(thumbnail: nil, currentT: Int(duration * n_progress), totalT: Int(duration))
@@ -380,7 +263,9 @@ extension MSVideoListCell: MSVideoContainerDelegate {
                 
                 let point = ges.location(in: ges.view)
                 let offsetX = point.x - MSVideoListCell.preX
-                let n_progress = MSVideoListCell.startProgess + Float(offsetX / self.progressIndicator.width)
+                var n_progress = MSVideoListCell.startProgess + Float(offsetX / self.progressIndicator.width)
+                n_progress = max(n_progress, 0)
+                n_progress = min(n_progress, 1)
                 delegate?.needToSeek(to: n_progress)
                 //列表禁止滚动解除
                 delegate?.needToStopScroll(stop: false)
@@ -396,44 +281,11 @@ extension MSVideoListCell: MSVideoContainerDelegate {
         }
     }
     
-    @objc func handleGesture(ges: UITapGestureRecognizer) {
-        
-        switch ges.view?.tag {
-        case COMMENT_TAP_ACTION:
-//            CommentsPopView.init(awemeId: "").show()
-            break
-        case SHARE_TAP_ACTION:
-            SharePopView().show()
-            break
-        default:
-            //获取点击坐标，用于设置爱心显示位置
-            let point = ges.location(in: container)
-            //获取当前时间
-            let time = CACurrentMediaTime()
-            //判断当前点击时间与上次点击时间的时间间隔
-            if (time - lastTapTime) > 0.25 {
-                //推迟0.25秒执行单击方法
-                self.perform(#selector(singleTapAction), with: nil, afterDelay: 0.25)
-            } else {
-                //取消执行单击方法
-                NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(singleTapAction), object: nil)
-                //执行连击显示爱心的方法
-                showLikeViewAnim(newPoint: point, oldPoint: lastTapPoint)
-            }
-            //更新上一次点击位置
-            lastTapPoint = point
-            //更新上一次点击时间
-            lastTapTime = time
-            break
-        }
-    }
-    
     @objc func singleTapAction() {
 
         self.delegate?.needToPlayOrPause(pause: self.pauseIcon.isHidden)
         showPauseViewAnim()
     }
-    
 }
 
 
@@ -482,22 +334,17 @@ extension MSVideoListCell {
     //拖动进度条时，将屏幕清屏
     func cleanScreen(hidden: Bool) {
         UIView.animate(withDuration: 0.25) {
-            self.musicAlum.alpha = hidden ? 0 : 1
-            self.musicIcon.alpha = hidden ? 0 : 1
-            self.avatarIcon.alpha = hidden ? 0 : 1
-            self.favorite.alpha = hidden ? 0 : 1
-            self.favoriteNum.alpha = hidden ? 0 : 1
-            self.commentIcon.alpha = hidden ? 0 : 1
-            self.commentNum.alpha = hidden ? 0 : 1
-            self.shareIcon.alpha = hidden ? 0 : 1
-            self.shareNum.alpha = hidden ? 0 : 1
-            self.nickName.alpha = hidden ? 0 : 1
-            self.desc.alpha = hidden ? 0 : 1
-            self.musicName.alpha = hidden ? 0 : 1
-            self.focus.alpha = hidden ? 0 : 1
+            self.rightToolsView.isHidden = hidden
             if let vc = self.currentVC() as? MSVideoPlayController {
                 vc.navView.alpha = hidden ? 0 : 1
             }
         }
+    }
+}
+
+extension MSVideoListCell: MTVideoRightToolsViewDelegate {
+    
+    func toolsViewTapHangler(ges: UITapGestureRecognizer) {
+        handleGesture(ges: ges)
     }
 }

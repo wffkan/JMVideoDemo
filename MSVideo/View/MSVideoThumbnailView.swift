@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import SwiftUI
 
 class MSVideoThumbnailView: UIView {
     
@@ -22,15 +23,23 @@ class MSVideoThumbnailView: UIView {
     
     lazy var currentTimeL: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 22, weight: .medium)
+        label.font = .systemFont(ofSize: 24, weight: .semibold)
         label.textColor = .white
         return label
     }()
     
     lazy var totalTimeL: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 22, weight: .medium)
-        label.textColor = .white.withAlphaComponent(0.5)
+        label.font = .systemFont(ofSize: 24, weight: .semibold)
+        label.textColor = .white.withAlphaComponent(0.6)
+        return label
+    }()
+    
+    lazy var indicator: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14,weight: .semibold)
+        label.textColor = .white
+        label.text = "/"
         return label
     }()
     
@@ -46,16 +55,23 @@ class MSVideoThumbnailView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubview(thumbImageView)
+        addSubview(indicator)
         addSubview(currentTimeL)
         addSubview(totalTimeL)
         
+        indicator.snp.makeConstraints { make in
+            make.width.equalTo(7)
+            make.height.equalTo(20)
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-10)
+        }
         currentTimeL.snp.makeConstraints { make in
-            make.right.equalTo(self.snp.centerX)
-            make.bottom.equalToSuperview()
+            make.right.equalTo(self.indicator.snp.left).offset(-12)
+            make.centerY.equalTo(indicator)
         }
         totalTimeL.snp.makeConstraints { make in
-            make.left.equalTo(self.snp.centerX)
-            make.bottom.equalToSuperview()
+            make.left.equalTo(self.indicator.snp.right).offset(12)
+            make.centerY.equalTo(indicator)
         }
         thumbImageView.snp.makeConstraints { make in
             make.width.equalTo(0)
@@ -68,8 +84,8 @@ class MSVideoThumbnailView: UIView {
     
     func update(thumbnail: UIImage?,currentT: Int,totalT: Int) {
         thumbImageView.image = thumbnail
-        currentTimeL.text = String.init(format: "%02d:%02d   |", currentT / 1000 / 60,currentT / 1000 % 60)
-        totalTimeL.text = String.init(format: "   %02d:%02d", totalT / 1000 / 60,totalT / 1000 % 60)
+        currentTimeL.text = String.init(format: "%d:%02d", currentT / 1000 / 60,currentT / 1000 % 60)
+        totalTimeL.text = String.init(format: "%d:%02d", totalT / 1000 / 60,totalT / 1000 % 60)
         
         if thumbnail == nil {
             thumbImageView.snp.makeConstraints { make in
