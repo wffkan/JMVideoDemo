@@ -43,6 +43,9 @@ class MTVideoAblumListCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
+        backgroundColor = .clear
+        selectionStyle = .none
+        
         contentView.addSubview(coverIV)
         contentView.addSubview(titleL)
         contentView.addSubview(subTitleL)

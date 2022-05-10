@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class MTVideoAblumBar: UIButton {
+class MTVideoAblumBar: UIView {
     
     lazy var icon: UIImageView = {
         let icon = UIImageView()

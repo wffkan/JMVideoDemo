@@ -17,6 +17,7 @@ let COMMENT_TAP_ACTION:Int = 3000
 let SHARE_TAP_ACTION:Int = 4000
 let COLLECT_TAP_ACTION:Int = 5000
 let QUESTION_TAP_ACTION:Int = 6000
+let VIDEO_ABLUM_TAP_ACTION:Int = 7000
 
 protocol MSVideoListCellDelegate: NSObjectProtocol {
     
@@ -98,7 +99,9 @@ class MTVideoListCell: UICollectionViewCell {
     
     private lazy var ablumBar: MTVideoAblumBar = {
         let view = MTVideoAblumBar()
-        view.addTarget(self, action: #selector(ablumbarClick), for: .touchUpInside)
+        view.tag = VIDEO_ABLUM_TAP_ACTION
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleGesture))
+        view.addGestureRecognizer(tap)
         return view
     }()
     
@@ -333,6 +336,9 @@ class MTVideoListCell: UICollectionViewCell {
                 }
                 relateQaFold = !relateQaFold
             break
+        case VIDEO_ABLUM_TAP_ACTION:
+            showVideoAblum()
+            break
         default:
             //获取点击坐标，用于设置爱心显示位置
             let point = ges.location(in: container)
@@ -362,8 +368,9 @@ class MTVideoListCell: UICollectionViewCell {
     }
     
     //MARK: - 视频合集
-    @objc func ablumbarClick() {
+    func showVideoAblum() {
         let vc = MTVideoAblumVC()
+        vc.modalPresentationStyle = .overFullScreen
         self.currentVC()?.present(vc, animated: true, completion: nil)
     }
     
