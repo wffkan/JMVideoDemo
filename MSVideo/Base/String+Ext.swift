@@ -93,4 +93,6 @@ public extension String {
         let framesetter = CTFramesetterCreateWithAttributedString(attString)
         return CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRange(location: 0,length: 0), nil, CGSize(width: Double.greatestFiniteMagnitude, height: Double.greatestFiniteMagnitude), nil)
     }
+    
+    
 }

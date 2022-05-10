@@ -26,7 +26,7 @@ class MSVideoPlayController: BFBaseViewController {
         collectionView.showsVerticalScrollIndicator = false
         collectionView.contentInsetAdjustmentBehavior = .never
         collectionView.backgroundColor = .black
-        collectionView.register(MSVideoListCell.self, forCellWithReuseIdentifier: "videoCell")
+        collectionView.register(MTVideoListCell.self, forCellWithReuseIdentifier: "videoCell")
         return collectionView
     }()
     
@@ -41,7 +41,7 @@ class MSVideoPlayController: BFBaseViewController {
     
     private var datas: [MSVideoModel] = []
     
-    private var currentPlaingCell: MSVideoListCell?
+    private var currentPlaingCell: MTVideoListCell?
     
     private var currentPlayIndex: Int?
     
@@ -124,7 +124,7 @@ class MSVideoPlayController: BFBaseViewController {
         self.currentPlaingCell = nil
         MSVideoPlayerManager.delegate = self
 
-        self.currentPlaingCell = self.collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? MSVideoListCell
+        self.currentPlaingCell = self.collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? MTVideoListCell
         // 重新播放
         if let cell = self.currentPlaingCell {
             self.currentPlayIndex = index
@@ -152,7 +152,7 @@ extension MSVideoPlayController: UICollectionViewDataSource,UICollectionViewDele
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "videoCell", for: indexPath) as! MSVideoListCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "videoCell", for: indexPath) as! MTVideoListCell
         cell.reloadData(model: datas[indexPath.row])
         cell.delegate = self
         return cell

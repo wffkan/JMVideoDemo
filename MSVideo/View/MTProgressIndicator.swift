@@ -8,7 +8,7 @@
 import UIKit
 
 
-class ProgressIndicator: UIView {
+class MTProgressIndicator: UIView {
     
     private lazy var bgLine: UIView = {
         let view = UIView(bgColor: UIColor(hex: "#4F4F4F"))

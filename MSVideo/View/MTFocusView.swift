@@ -10,23 +10,22 @@ import Foundation
 import UIKit
 
 
-class FocusView: UIImageView {
+class MTFocusView: UIImageView {
     
     init() {
-        super.init(frame: CGRect.init(origin: .zero, size: CGSize.init(width: 24, height: 24)))
+        super.init(frame: CGRect(x: 0, y: 0, width: 22, height: 22))
         initSubView()
     }
-    
+                   
     override init(frame: CGRect) {
         super.init(frame: frame)
         initSubView()
     }
     
-    
     func initSubView() {
         self.layer.cornerRadius = frame.size.width/2
-        self.layer.backgroundColor = ColorThemeRed.cgColor
-        self.image = UIImage.init(named: "icon_personal_add_little")
+        self.layer.backgroundColor = UIColor(hex: "#0EA9B0").cgColor
+        self.image = UIImage(named: "personal_add_focus")
         self.contentMode = .center
         self.isUserInteractionEnabled = true
         self.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(beginAnimation)))
@@ -54,8 +53,8 @@ class FocusView: UIImageView {
     }
     
     func resetView() {
-        self.layer.backgroundColor = ColorThemeRed.cgColor
-        self.image = UIImage.init(named: "icon_personal_add_little")
+        self.layer.backgroundColor = UIColor(hex: "#0EA9B0").cgColor
+        self.image = UIImage(named: "personal_add_focus")
         self.layer.removeAllAnimations()
         self.isHidden = false
     }
@@ -65,13 +64,13 @@ class FocusView: UIImageView {
     }
 }
 
-extension FocusView: CAAnimationDelegate {
+extension MTFocusView: CAAnimationDelegate {
     
     func animationDidStart(_ anim: CAAnimation) {
         self.isUserInteractionEnabled = false
         self.contentMode = .scaleToFill
-        self.layer.backgroundColor = ColorThemeRed.cgColor
-        self.image = UIImage.init(named: "iconSignDone")
+        self.layer.backgroundColor = UIColor(hex: "#BFBFBF").cgColor
+        self.image = UIImage(named: "personal_add_focus_sel")
     }
     
     func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {

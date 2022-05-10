@@ -24,7 +24,7 @@ class MTVideoRightToolsView: UIView {
     
     private var avatarIcon: UIImageView = UIImageView(image: UIImage(named: "img_find_default"))
     
-    private var focus: FocusView = FocusView()
+    private var focus: MTFocusView = MTFocusView()
 
     private var shareIcon: UIImageView = UIImageView(image: UIImage(named: "video_share"))
     
@@ -151,7 +151,7 @@ class MTVideoRightToolsView: UIView {
         focus.snp.makeConstraints { make in
             make.centerX.equalTo(self.avatarIcon)
             make.centerY.equalTo(self.avatarIcon.snp.bottom)
-            make.width.height.equalTo(25)
+            make.width.height.equalTo(22)
         }
     }
     
