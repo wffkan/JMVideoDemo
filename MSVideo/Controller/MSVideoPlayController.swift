@@ -51,7 +51,9 @@ class MSVideoPlayController: BFBaseViewController {
     
     private let dismissScaleAnimation: DismissScaleAnimation = DismissScaleAnimation()
     
-    private let leftDragInteractiveTransition: DragLeftInteractiveTransition = DragLeftInteractiveTransition()
+    private let dragInteractiveTransition: DragInteractiveTransition = DragInteractiveTransition()
+    
+    private let pushAnimation: PushAnimation = PushAnimation()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -73,15 +75,20 @@ class MSVideoPlayController: BFBaseViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.needToPlayOrPause(pause: false)
+        self.dragInteractiveTransition.dragPushEnable = true
+        self.dragInteractiveTransition.dragDismissEnable = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         self.needToPlayOrPause(pause: true)
+        self.dragInteractiveTransition.dragPushEnable = false
+        self.dragInteractiveTransition.dragDismissEnable = false
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -101,11 +108,13 @@ class MSVideoPlayController: BFBaseViewController {
         nav.modalPresentationStyle = .overCurrentContext
         let startFrame = startView.superview!.convert(startView.frame, to: nil)
         self.presentScaleAnimation.startFrame = startFrame
+        self.presentScaleAnimation.startView = startView
         self.dismissScaleAnimation.endView = startView
         self.dismissScaleAnimation.endFrame = startFrame
         
         fromVC.modalPresentationStyle = .currentContext
-        self.leftDragInteractiveTransition.wireToViewController(vc: nav)
+        self.dragInteractiveTransition.wireToViewController(vc: nav)
+        self.dragInteractiveTransition.pushVCType = MTTestController.self as UIViewController.Type
         fromVC.present(nav, animated: true, completion: nil)
     }
     
@@ -165,7 +174,7 @@ extension MSVideoPlayController: UICollectionViewDataSource,UICollectionViewDele
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let offsetY = scrollView.contentOffset.y
         let currentIndex = Int(offsetY / UIScreen.height)
-        print("index: %zd",currentIndex)
+//        print("index: %zd",currentIndex)
         
         if self.currentPlayIndex != currentIndex {
             MSVideoPlayerManager.playView.isHidden = true
@@ -173,6 +182,7 @@ extension MSVideoPlayController: UICollectionViewDataSource,UICollectionViewDele
             if let resouceView = self.resourceViewProvider?(currentIndex) {
                 let endFrame = resouceView.superview!.convert(resouceView.frame, to: nil)
                 self.dismissScaleAnimation.endView = resouceView
+                self.dismissScaleAnimation.endView?.alpha = 0
                 self.dismissScaleAnimation.endFrame = endFrame
             }else {
                 self.dismissScaleAnimation.endFrame = .zero
@@ -190,32 +200,32 @@ extension MSVideoPlayController: MSVideoPlayerDelegate {
     
     func playerStatusChaned(player: MSVideoPlayer,to: MSVideoPlayerStatus) {
         self.currentPlaingCell?.playStatusChanged(to: to)
-        if to == .autoPlayStart {
-            print("***playerStatusChaned : autoPlayStart")
-        }else if to == .loadingStart {
-            print("***playerStatusChaned : loadingStart")
-        }else if to == .loadingEnd {
-            print("***playerStatusChaned : loadingEnd")
-        }else if to == .firstRenderedStart {
-            print("***playerStatusChaned : firstRenderedStart")
-            MSVideoPlayerManager.playView.isHidden = false
-        }else if to == .ended {
-            print("***playerStatusChaned : ended")
-        }else if to == .seekEnd {
-            print("***playerStatusChaned : seekEnd")
-        }else if to == .loopingStart {
-            print("***playerStatusChaned : loopingStart")
-        }else if to == .paused {
-            print("***playerStatusChaned : paused")
-        }else if to == .error {
-            print("***playerStatusChaned : error")
-        }else if to == .unload {
-            print("***playerStatusChaned : unload")
-        }
+//        if to == .autoPlayStart {
+//            print("***playerStatusChaned : autoPlayStart")
+//        }else if to == .loadingStart {
+//            print("***playerStatusChaned : loadingStart")
+//        }else if to == .loadingEnd {
+//            print("***playerStatusChaned : loadingEnd")
+//        }else if to == .firstRenderedStart {
+//            print("***playerStatusChaned : firstRenderedStart")
+//            MSVideoPlayerManager.playView.isHidden = false
+//        }else if to == .ended {
+//            print("***playerStatusChaned : ended")
+//        }else if to == .seekEnd {
+//            print("***playerStatusChaned : seekEnd")
+//        }else if to == .loopingStart {
+//            print("***playerStatusChaned : loopingStart")
+//        }else if to == .paused {
+//            print("***playerStatusChaned : paused")
+//        }else if to == .error {
+//            print("***playerStatusChaned : error")
+//        }else if to == .unload {
+//            print("***playerStatusChaned : unload")
+//        }
     }
     
     func playerProgressChanged(player: MSVideoPlayer,currentT: Float,totalT: Float,progress: Float) {
-        print("currentT: \(currentT),totalT: \(totalT),progress: \(progress)")
+//        print("currentT: \(currentT),totalT: \(totalT),progress: \(progress)")
         self.currentPlaingCell?.updateProgress(progress: progress)
     }
 }
@@ -239,6 +249,7 @@ extension MSVideoPlayController: MSVideoListCellDelegate {
     }
 }
 
+//MARK: - present 转场动画
 extension MSVideoPlayController: UIViewControllerTransitioningDelegate {
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return self.presentScaleAnimation
@@ -249,6 +260,25 @@ extension MSVideoPlayController: UIViewControllerTransitioningDelegate {
     }
     
     func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        return self.leftDragInteractiveTransition.isInteracting ? self.leftDragInteractiveTransition : nil
+        return self.dragInteractiveTransition.isDismissInteracting ? self.dragInteractiveTransition : nil
+    }
+}
+
+//MARK: -push 转场动画
+extension MSVideoPlayController {
+    
+    func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+
+        if animationController.isKind(of: PushAnimation.self) {
+            return self.dragInteractiveTransition.isPushInteracting ? self.dragInteractiveTransition : nil
+        }
+        return nil
+    }
+
+    func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        if operation == .push {
+            return self.pushAnimation
+        }
+        return nil
     }
 }

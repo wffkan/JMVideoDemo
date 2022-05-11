@@ -17,7 +17,19 @@ class MTVideoAblumVC: BFBaseViewController,UIGestureRecognizerDelegate {
     
     lazy var headerView: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.width, height: 44))
+        let closeBtn = UIButton(type: .custom)
+        closeBtn.setImage(UIImage(named: ""), for: .normal)
+        closeBtn.frame = CGRect(x: UIScreen.width - 17 - 30, y: 7, width: 30, height: 30)
+        closeBtn.addTarget(self, action: #selector(hide), for: .touchUpInside)
+        view.addSubview(closeBtn)
         return view
+    }()
+    
+    lazy var navTitleL: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.textColor = .white
+        return label
     }()
     
     lazy var topMaskView: UIView = {
@@ -54,6 +66,12 @@ class MTVideoAblumVC: BFBaseViewController,UIGestureRecognizerDelegate {
         tableView.frame = CGRect(x: 0, y: 44, width: UIScreen.width, height: containerView.height - 44)
         containerView.addSubview(tableView)
 
+        headerView.addSubview(navTitleL)
+        navTitleL.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.centerX.equalToSuperview()
+            make.width.equalTo(UIScreen.width - 150)
+        }
         let pan = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler))
         pan.delegate = self
         containerView.addGestureRecognizer(pan)
@@ -132,7 +150,7 @@ class MTVideoAblumVC: BFBaseViewController,UIGestureRecognizerDelegate {
 
     }
     
-    func hide() {
+    @objc func hide() {
         let transform = CGAffineTransform(translationX: 0, y: self.containerView.height)
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: [.curveEaseOut,.allowUserInteraction]) {
             self.containerView.transform = transform
