@@ -62,7 +62,7 @@ class DismissScaleAnimation: NSObject,UIViewControllerAnimatedTransitioning {
             
         } completion: {_ in
             transitionContext.finishInteractiveTransition()
-            transitionContext.completeTransition(true)
+            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
             self.snapShotView!.removeFromSuperview()
             self.endView?.alpha = 1
         }

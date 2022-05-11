@@ -55,6 +55,7 @@ class MSVideoPlayController: BFBaseViewController {
     
     private let pushAnimation: PushAnimation = PushAnimation()
     
+    private let popAnimation: PopAnimation = PopAnimation()
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
@@ -81,7 +82,6 @@ class MSVideoPlayController: BFBaseViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -105,14 +105,14 @@ class MSVideoPlayController: BFBaseViewController {
     func show(fromVC: UIViewController,startView: UIView) {
         let nav = BFNavigationController(rootViewController: self)
         nav.transitioningDelegate = self
-        nav.modalPresentationStyle = .overCurrentContext
+        nav.modalPresentationStyle = .custom
         let startFrame = startView.superview!.convert(startView.frame, to: nil)
         self.presentScaleAnimation.startFrame = startFrame
         self.presentScaleAnimation.startView = startView
         self.dismissScaleAnimation.endView = startView
         self.dismissScaleAnimation.endFrame = startFrame
         
-        fromVC.modalPresentationStyle = .currentContext
+        fromVC.modalPresentationStyle = .custom
         self.dragInteractiveTransition.wireToViewController(vc: nav)
         self.dragInteractiveTransition.pushVCType = MTTestController.self as UIViewController.Type
         fromVC.present(nav, animated: true, completion: nil)
@@ -200,28 +200,28 @@ extension MSVideoPlayController: MSVideoPlayerDelegate {
     
     func playerStatusChaned(player: MSVideoPlayer,to: MSVideoPlayerStatus) {
         self.currentPlaingCell?.playStatusChanged(to: to)
-//        if to == .autoPlayStart {
-//            print("***playerStatusChaned : autoPlayStart")
-//        }else if to == .loadingStart {
-//            print("***playerStatusChaned : loadingStart")
-//        }else if to == .loadingEnd {
-//            print("***playerStatusChaned : loadingEnd")
-//        }else if to == .firstRenderedStart {
-//            print("***playerStatusChaned : firstRenderedStart")
-//            MSVideoPlayerManager.playView.isHidden = false
-//        }else if to == .ended {
-//            print("***playerStatusChaned : ended")
-//        }else if to == .seekEnd {
-//            print("***playerStatusChaned : seekEnd")
-//        }else if to == .loopingStart {
-//            print("***playerStatusChaned : loopingStart")
-//        }else if to == .paused {
-//            print("***playerStatusChaned : paused")
-//        }else if to == .error {
-//            print("***playerStatusChaned : error")
-//        }else if to == .unload {
-//            print("***playerStatusChaned : unload")
-//        }
+        if to == .autoPlayStart {
+            print("***playerStatusChaned : autoPlayStart")
+        }else if to == .loadingStart {
+            print("***playerStatusChaned : loadingStart")
+        }else if to == .loadingEnd {
+            print("***playerStatusChaned : loadingEnd")
+        }else if to == .firstRenderedStart {
+            print("***playerStatusChaned : firstRenderedStart")
+            MSVideoPlayerManager.playView.isHidden = false
+        }else if to == .ended {
+            print("***playerStatusChaned : ended")
+        }else if to == .seekEnd {
+            print("***playerStatusChaned : seekEnd")
+        }else if to == .loopingStart {
+            print("***playerStatusChaned : loopingStart")
+        }else if to == .paused {
+            print("***playerStatusChaned : paused")
+        }else if to == .error {
+            print("***playerStatusChaned : error")
+        }else if to == .unload {
+            print("***playerStatusChaned : unload")
+        }
     }
     
     func playerProgressChanged(player: MSVideoPlayer,currentT: Float,totalT: Float,progress: Float) {
@@ -278,6 +278,8 @@ extension MSVideoPlayController {
     func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         if operation == .push {
             return self.pushAnimation
+        }else if operation == .pop {
+            return self.popAnimation
         }
         return nil
     }

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		307F3E64282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.m in Sources */ = {isa = PBXBuildFile; fileRef = 307F3E63282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.m */; };
+		307F3E6B282C08A900B57949 /* PopAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307F3E6A282C08A900B57949 /* PopAnimation.swift */; };
 		308552EE281AD62B00B4F9B3 /* PresentScaleAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308552ED281AD62B00B4F9B3 /* PresentScaleAnimation.swift */; };
 		308552F0281AD8AE00B4F9B3 /* DismissScaleAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308552EF281AD8AE00B4F9B3 /* DismissScaleAnimation.swift */; };
 		308552F2281ADAF400B4F9B3 /* DragInteractiveTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308552F1281ADAF400B4F9B3 /* DragInteractiveTransition.swift */; };
@@ -93,6 +95,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		307F3E62282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+FDFullscreenPopGesture.h"; sourceTree = "<group>"; };
+		307F3E63282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+FDFullscreenPopGesture.m"; sourceTree = "<group>"; };
+		307F3E69282C03BF00B57949 /* SwiftOC-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwiftOC-Header.h"; sourceTree = "<group>"; };
+		307F3E6A282C08A900B57949 /* PopAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopAnimation.swift; sourceTree = "<group>"; };
 		308552ED281AD62B00B4F9B3 /* PresentScaleAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentScaleAnimation.swift; sourceTree = "<group>"; };
 		308552EF281AD8AE00B4F9B3 /* DismissScaleAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissScaleAnimation.swift; sourceTree = "<group>"; };
 		308552F1281ADAF400B4F9B3 /* DragInteractiveTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragInteractiveTransition.swift; sourceTree = "<group>"; };
@@ -193,12 +199,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		307F3E61282C025E00B57949 /* FDFullscreenPopGesture */ = {
+			isa = PBXGroup;
+			children = (
+				307F3E62282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.h */,
+				307F3E63282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.m */,
+			);
+			path = FDFullscreenPopGesture;
+			sourceTree = "<group>";
+		};
 		308552EC281AD61400B4F9B3 /* Transition */ = {
 			isa = PBXGroup;
 			children = (
 				308552ED281AD62B00B4F9B3 /* PresentScaleAnimation.swift */,
 				308552EF281AD8AE00B4F9B3 /* DismissScaleAnimation.swift */,
 				644A8DB2282B65D50040D414 /* PushAnimation.swift */,
+				307F3E6A282C08A900B57949 /* PopAnimation.swift */,
 				308552F1281ADAF400B4F9B3 /* DragInteractiveTransition.swift */,
 			);
 			path = Transition;
@@ -229,6 +245,7 @@
 		3094867A2813C001007D0862 /* MSVideo */ = {
 			isa = PBXGroup;
 			children = (
+				307F3E61282C025E00B57949 /* FDFullscreenPopGesture */,
 				3094867B2813C001007D0862 /* AppDelegate.swift */,
 				309486EA2813D625007D0862 /* Model */,
 				309486E72813D513007D0862 /* View */,
@@ -240,6 +257,7 @@
 				309486842813C003007D0862 /* Assets.xcassets */,
 				309486862813C003007D0862 /* LaunchScreen.storyboard */,
 				309486892813C003007D0862 /* Info.plist */,
+				307F3E69282C03BF00B57949 /* SwiftOC-Header.h */,
 			);
 			path = MSVideo;
 			sourceTree = "<group>";
@@ -588,6 +606,7 @@
 				30948708281587B7007D0862 /* HoverTextView.swift in Sources */,
 				30948704281585FE007D0862 /* SharePopView.swift in Sources */,
 				309486F82813E526007D0862 /* MSPlayView.swift in Sources */,
+				307F3E64282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.m in Sources */,
 				3094870A281587F6007D0862 /* Notification+.swift in Sources */,
 				644A8DAB282A0D2E0040D414 /* UILabel+Ext.swift in Sources */,
 				309486AF2813C28C007D0862 /* API.swift in Sources */,
@@ -614,6 +633,7 @@
 				309486D22813C3B4007D0862 /* UIColor+Ext.swift in Sources */,
 				644A8DB7282B9F4F0040D414 /* MTTestController.swift in Sources */,
 				309486CD2813C3B4007D0862 /* Date+Ext.swift in Sources */,
+				307F3E6B282C08A900B57949 /* PopAnimation.swift in Sources */,
 				309486E92813D52B007D0862 /* MSVideoListCell.swift in Sources */,
 				309486CF2813C3B4007D0862 /* UIButton+Ext.swift in Sources */,
 				309486EC2813D632007D0862 /* MSVideoModel.swift in Sources */,
@@ -786,7 +806,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = WUZZPFNJQ3;
+				DEVELOPMENT_TEAM = 6N3JSL2D62;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MSVideo/Info.plist;
@@ -804,6 +824,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.bennyw.MSVideo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "MSVideo/SwiftOC-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -817,7 +838,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = WUZZPFNJQ3;
+				DEVELOPMENT_TEAM = 6N3JSL2D62;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MSVideo/Info.plist;
@@ -835,6 +856,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.bennyw.MSVideo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "MSVideo/SwiftOC-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

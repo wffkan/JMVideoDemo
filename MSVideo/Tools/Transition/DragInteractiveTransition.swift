@@ -49,12 +49,7 @@ class DragInteractiveTransition: UIPercentDrivenInteractiveTransition {
     
     @objc private func handleGesture(ges: UIPanGestureRecognizer) {
         
-//        let view = ges.view!
-//        let translation = ges.translation(in: view.superview)
         let velocity = ges.velocity(in: ges.view)
-//        print("translation: \(translation)")
-        print("state: \(ges.state)")
-        print("velocity: \(ges.velocity(in: ges.view))")
         if ges.state == .began {
             if velocity.x > 0 {//右滑dismiss
                 if self.dragDismissEnable {
@@ -81,7 +76,7 @@ class DragInteractiveTransition: UIPercentDrivenInteractiveTransition {
         switch ges.state {
                 
             case .began:
-                if self.isDismissInteracting || translation.x <= abs(translation.y) {return}
+                if self.isDismissInteracting || translation.x < abs(translation.y) {return}
 
                 self.transitionMaskLayer = CALayer()
                 self.transitionMaskLayer?.frame = view.frame
@@ -137,7 +132,7 @@ class DragInteractiveTransition: UIPercentDrivenInteractiveTransition {
         let translation = ges.translation(in: view.superview)
         switch ges.state {
             case .began:
-                if self.isPushInteracting || abs(translation.x) <= abs(translation.y) {return}
+                if self.isPushInteracting || abs(translation.x) < abs(translation.y) {return}
                 self.isPushInteracting = true
                 self.pushToVC = self.pushVCType!.init()
                 if let nav = self.parentVC as? UINavigationController {
@@ -149,19 +144,19 @@ class DragInteractiveTransition: UIPercentDrivenInteractiveTransition {
                 if !self.isPushInteracting {return}
                 var progress = abs(translation.x) / UIScreen.width
                 progress = CGFloat(fminf(fmaxf(Float(progress), 0.0), 1.0))
-                self.pushToVC?.view.frame = CGRect(x: UIScreen.width * progress, y: 0, width: UIScreen.width, height: UIScreen.height)
                 self.update(progress)
             case .cancelled,.ended:
                 if !self.isPushInteracting {return}
                 var progress = abs(translation.x) / UIScreen.width
                 progress = CGFloat(fminf(fmaxf(Float(progress), 0.0), 1.0))
                 if progress < 0.2 {
+                    self.pushToVC?.navigationController?.popViewController(animated: true)
                     UIView.animate(withDuration: progress, delay: 0, options: .curveEaseOut) {
                         self.pushToVC?.view.frame = CGRect(x: UIScreen.width, y: 0, width: UIScreen.width, height: UIScreen.height)
                     } completion: { _ in
                         self.isPushInteracting = false
                         self.cancel()
-                        self.pushToVC?.navigationController?.popViewController(animated: true)
+                        
                         self.pushToVC = nil
                     }
                 }else {
@@ -171,6 +166,7 @@ class DragInteractiveTransition: UIPercentDrivenInteractiveTransition {
                 }
                 
             default:
+                self.cancel()
                 self.pushToVC?.navigationController?.popViewController(animated: true)
                 self.isPushInteracting = false
                 self.pushToVC = nil
