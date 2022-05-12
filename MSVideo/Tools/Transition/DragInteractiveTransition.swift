@@ -71,7 +71,7 @@ class DragInteractiveTransition: UIPercentDrivenInteractiveTransition {
     
     private func dragDismiss(ges: UIPanGestureRecognizer) {
         let view = ges.view!
-        let translation = ges.translation(in: view.superview)
+        let translation = ges.translation(in: view)
         
         switch ges.state {
                 
@@ -129,7 +129,7 @@ class DragInteractiveTransition: UIPercentDrivenInteractiveTransition {
     
     private func dragPush(ges: UIPanGestureRecognizer) {
         let view = ges.view!
-        let translation = ges.translation(in: view.superview)
+        let translation = ges.translation(in: view)
         switch ges.state {
             case .began:
                 if self.isPushInteracting || abs(translation.x) < abs(translation.y) {return}
@@ -148,17 +148,14 @@ class DragInteractiveTransition: UIPercentDrivenInteractiveTransition {
             case .cancelled,.ended:
                 if !self.isPushInteracting {return}
                 var progress = abs(translation.x) / UIScreen.width
+                print("translation.x: \(translation.x)")
+                print("progress: \(progress)")
                 progress = CGFloat(fminf(fmaxf(Float(progress), 0.0), 1.0))
+                
                 if progress < 0.2 {
-                    self.pushToVC?.navigationController?.popViewController(animated: true)
-                    UIView.animate(withDuration: progress, delay: 0, options: .curveEaseOut) {
-                        self.pushToVC?.view.frame = CGRect(x: UIScreen.width, y: 0, width: UIScreen.width, height: UIScreen.height)
-                    } completion: { _ in
-                        self.isPushInteracting = false
-                        self.cancel()
-                        
-                        self.pushToVC = nil
-                    }
+                    self.cancel()
+                    self.isPushInteracting = false
+                    self.pushToVC = nil
                 }else {
                     self.isPushInteracting = false
                     self.finish()

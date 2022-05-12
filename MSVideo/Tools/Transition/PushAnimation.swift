@@ -25,7 +25,6 @@ class PushAnimation: NSObject, UIViewControllerAnimatedTransitioning {
         UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.2, options: .curveEaseOut) {
             toVC?.view.frame = CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height)
         } completion: { _ in
-            transitionContext.finishInteractiveTransition()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
     }

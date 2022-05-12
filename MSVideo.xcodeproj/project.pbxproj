@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		307F3E64282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.m in Sources */ = {isa = PBXBuildFile; fileRef = 307F3E63282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.m */; };
-		307F3E6B282C08A900B57949 /* PopAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307F3E6A282C08A900B57949 /* PopAnimation.swift */; };
 		308552EE281AD62B00B4F9B3 /* PresentScaleAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308552ED281AD62B00B4F9B3 /* PresentScaleAnimation.swift */; };
 		308552F0281AD8AE00B4F9B3 /* DismissScaleAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308552EF281AD8AE00B4F9B3 /* DismissScaleAnimation.swift */; };
 		308552F2281ADAF400B4F9B3 /* DragInteractiveTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308552F1281ADAF400B4F9B3 /* DragInteractiveTransition.swift */; };
@@ -37,7 +36,6 @@
 		309486D62813C3B4007D0862 /* UIDevice+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486C82813C3B4007D0862 /* UIDevice+Ext.swift */; };
 		309486D72813C3B4007D0862 /* UIView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486C92813C3B4007D0862 /* UIView+Ext.swift */; };
 		309486DB2813C476007D0862 /* MSVideoUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486DA2813C476007D0862 /* MSVideoUtils.swift */; };
-		309486DF2813C6E2007D0862 /* MSVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486DE2813C6E2007D0862 /* MSVideoPlayer.swift */; };
 		309486E52813D3C3007D0862 /* MSVideoPlayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486E42813D3C3007D0862 /* MSVideoPlayController.swift */; };
 		309486E92813D52B007D0862 /* MSVideoListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486E82813D52B007D0862 /* MSVideoListCell.swift */; };
 		309486EC2813D632007D0862 /* MSVideoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486EB2813D632007D0862 /* MSVideoModel.swift */; };
@@ -98,7 +96,6 @@
 		307F3E62282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+FDFullscreenPopGesture.h"; sourceTree = "<group>"; };
 		307F3E63282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+FDFullscreenPopGesture.m"; sourceTree = "<group>"; };
 		307F3E69282C03BF00B57949 /* SwiftOC-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwiftOC-Header.h"; sourceTree = "<group>"; };
-		307F3E6A282C08A900B57949 /* PopAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopAnimation.swift; sourceTree = "<group>"; };
 		308552ED281AD62B00B4F9B3 /* PresentScaleAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentScaleAnimation.swift; sourceTree = "<group>"; };
 		308552EF281AD8AE00B4F9B3 /* DismissScaleAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissScaleAnimation.swift; sourceTree = "<group>"; };
 		308552F1281ADAF400B4F9B3 /* DragInteractiveTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragInteractiveTransition.swift; sourceTree = "<group>"; };
@@ -131,7 +128,6 @@
 		309486C82813C3B4007D0862 /* UIDevice+Ext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIDevice+Ext.swift"; sourceTree = "<group>"; };
 		309486C92813C3B4007D0862 /* UIView+Ext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Ext.swift"; sourceTree = "<group>"; };
 		309486DA2813C476007D0862 /* MSVideoUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSVideoUtils.swift; sourceTree = "<group>"; };
-		309486DE2813C6E2007D0862 /* MSVideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSVideoPlayer.swift; sourceTree = "<group>"; };
 		309486E42813D3C3007D0862 /* MSVideoPlayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSVideoPlayController.swift; sourceTree = "<group>"; };
 		309486E82813D52B007D0862 /* MSVideoListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSVideoListCell.swift; sourceTree = "<group>"; };
 		309486EB2813D632007D0862 /* MSVideoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSVideoModel.swift; sourceTree = "<group>"; };
@@ -214,7 +210,6 @@
 				308552ED281AD62B00B4F9B3 /* PresentScaleAnimation.swift */,
 				308552EF281AD8AE00B4F9B3 /* DismissScaleAnimation.swift */,
 				644A8DB2282B65D50040D414 /* PushAnimation.swift */,
-				307F3E6A282C08A900B57949 /* PopAnimation.swift */,
 				308552F1281ADAF400B4F9B3 /* DragInteractiveTransition.swift */,
 			);
 			path = Transition;
@@ -326,7 +321,6 @@
 			children = (
 				308552EC281AD61400B4F9B3 /* Transition */,
 				309486DA2813C476007D0862 /* MSVideoUtils.swift */,
-				309486DE2813C6E2007D0862 /* MSVideoPlayer.swift */,
 			);
 			path = Tools;
 			sourceTree = "<group>";
@@ -595,7 +589,6 @@
 				64548DBD281913B400708652 /* MSVideoListController.swift in Sources */,
 				644A8DA9282A0AED0040D414 /* MTRelateQestionView.swift in Sources */,
 				309486CE2813C3B4007D0862 /* Bundle+Ext.swift in Sources */,
-				309486DF2813C6E2007D0862 /* MSVideoPlayer.swift in Sources */,
 				3094870C28158814007D0862 /* NSAttributedString+.swift in Sources */,
 				644A8DB3282B65D50040D414 /* PushAnimation.swift in Sources */,
 				309486BB2813C2B4007D0862 /* BFNavigationController.swift in Sources */,
@@ -633,7 +626,6 @@
 				309486D22813C3B4007D0862 /* UIColor+Ext.swift in Sources */,
 				644A8DB7282B9F4F0040D414 /* MTTestController.swift in Sources */,
 				309486CD2813C3B4007D0862 /* Date+Ext.swift in Sources */,
-				307F3E6B282C08A900B57949 /* PopAnimation.swift in Sources */,
 				309486E92813D52B007D0862 /* MSVideoListCell.swift in Sources */,
 				309486CF2813C3B4007D0862 /* UIButton+Ext.swift in Sources */,
 				309486EC2813D632007D0862 /* MSVideoModel.swift in Sources */,
@@ -806,7 +798,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6N3JSL2D62;
+				DEVELOPMENT_TEAM = WUZZPFNJQ3;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MSVideo/Info.plist;
@@ -838,7 +830,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6N3JSL2D62;
+				DEVELOPMENT_TEAM = WUZZPFNJQ3;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MSVideo/Info.plist;

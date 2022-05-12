@@ -7,7 +7,22 @@
 
 import Foundation
 import UIKit
+import AliyunPlayer
+import AVFoundation
 
+
+enum MTVideoPlayerStatus {
+    case unload // 未加载
+    case firstRenderedStart // 首帧显示
+    case autoPlayStart // 自动播放开始事件
+    case loadingStart // 缓冲开始
+    case loadingEnd // 缓冲结束
+    case paused // 暂停
+    case ended // 播放完成
+    case seekEnd  // 跳转完成
+    case loopingStart  // 循环播放开始
+    case error // 错误
+}
 
 class MSVideoPlayController: BFBaseViewController {
     
@@ -47,6 +62,7 @@ class MSVideoPlayController: BFBaseViewController {
     
     private var needToPlayAtIndex: Int = 0
     
+    // 转场属性
     private let presentScaleAnimation: PresentScaleAnimation = PresentScaleAnimation()
     
     private let dismissScaleAnimation: DismissScaleAnimation = DismissScaleAnimation()
@@ -54,10 +70,49 @@ class MSVideoPlayController: BFBaseViewController {
     private let dragInteractiveTransition: DragInteractiveTransition = DragInteractiveTransition()
     
     private let pushAnimation: PushAnimation = PushAnimation()
+
+    // 播放器相关属性
+    private var _player: AliListPlayer?
+    private var player: AliListPlayer? {
+        set {
+           _player = newValue
+        }
+        get {
+            if _player == nil {
+                _player = createPlayer()
+            }
+            return _player
+        }
+    }
     
-    private let popAnimation: PopAnimation = PopAnimation()
+    private var _playView: UIView?
+    private var playView: UIView? {
+        set {
+            _playView = newValue
+        }
+        get {
+            if _playView == nil {
+                _playView = createPlayView()
+            }
+            return _playView
+        }
+    }
+    
+    var duration: Int {
+        return Int(self.player?.duration ?? 0)
+    }
+    
+    private var playList: [MSVideoModel] = []
+    
+    private(set) var currentPlayingIndex: Int = 0
+    
+    private(set) var isPlaying: Bool = false // 是否正在播放
+    
+    private var needToAutoResume: Bool = false  //用于记录返回前台时是否要自动恢复播放
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.fd_prefersNavigationBarHidden = true
         view.backgroundColor = .black
         view.addSubview(collectionView)
         view.addSubview(navView)
@@ -66,6 +121,7 @@ class MSVideoPlayController: BFBaseViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.startPlayVideo(index: self.needToPlayAtIndex)
         }
+        addNotifications()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -96,10 +152,10 @@ class MSVideoPlayController: BFBaseViewController {
     }
     
     deinit {
-        MSVideoPlayerManager.videoStop()
-        MSVideoPlayerManager.delegate = nil
-        MSVideoPlayerManager.cleanList()
-        MSVideoPlayerManager.videoDestroy()
+        NotificationCenter.default.removeObserver(self)
+        self.videoStop()
+        self.cleanList()
+        self.videoDestroy()
     }
     
     func show(fromVC: UIViewController,startView: UIView) {
@@ -121,24 +177,25 @@ class MSVideoPlayController: BFBaseViewController {
     func reloadVideos(datas: [MSVideoModel],playAtIndex: Int) {
         self.datas.append(contentsOf: datas)
         self.needToPlayAtIndex = playAtIndex
-        MSVideoPlayerManager.addVideoSource(arr: datas)
+        self.addVideoSource(arr: datas)
         collectionView.reloadData()
     }
     
     private func startPlayVideo(index: Int) {
         
         self.currentPlaingCell?.updateProgress(progress: 0)
-        MSVideoPlayerManager.playView.isHidden = true
-        MSVideoPlayerManager.playView.removeFromSuperview()
+        self.playView?.isHidden = true
+        self.playView?.removeFromSuperview()
+        self.playView = nil
         self.currentPlaingCell = nil
-        MSVideoPlayerManager.delegate = self
 
         self.currentPlaingCell = self.collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? MTVideoListCell
         // 重新播放
         if let cell = self.currentPlaingCell {
             self.currentPlayIndex = index
-            cell.contentView.insertSubview(MSVideoPlayerManager.playView, aboveSubview: cell.bgImageView)
-            MSVideoPlayerManager.moveToPlay(atIndex: index)
+            self.player?.playerView = self.playView
+            cell.contentView.insertSubview(self.playView!, aboveSubview: cell.bgImageView)
+            self.moveToPlay(atIndex: index)
         }
     }
     
@@ -147,9 +204,14 @@ class MSVideoPlayController: BFBaseViewController {
     }
     
     @objc private func navViewRightDidClick() {
-        let sheetVC = UIAlertController(title: nil, message: MSVideoPlayerManager.videoInfo(), preferredStyle: .actionSheet)
+        let sheetVC = UIAlertController(title: nil, message: self.videoInfo(), preferredStyle: .actionSheet)
         sheetVC.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
         self.present(sheetVC, animated: true, completion: nil)
+    }
+    
+    private func addNotifications() {
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationEnterBackground), name: UIApplication.willResignActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
 }
 
@@ -177,7 +239,7 @@ extension MSVideoPlayController: UICollectionViewDataSource,UICollectionViewDele
 //        print("index: %zd",currentIndex)
         
         if self.currentPlayIndex != currentIndex {
-            MSVideoPlayerManager.playView.isHidden = true
+            self.playView?.isHidden = true
             self.startPlayVideo(index: currentIndex)
             if let resouceView = self.resourceViewProvider?(currentIndex) {
                 let endFrame = resouceView.superview!.convert(resouceView.frame, to: nil)
@@ -196,9 +258,122 @@ extension MSVideoPlayController: UICollectionViewDataSource,UICollectionViewDele
     }
 }
 
-extension MSVideoPlayController: MSVideoPlayerDelegate {
+//MARK: - 播放器内部回调
+extension MSVideoPlayController: AVPDelegate {
     
-    func playerStatusChaned(player: MSVideoPlayer,to: MSVideoPlayerStatus) {
+    func onError(_ player: AliPlayer!, errorModel: AVPErrorModel!) {
+        print("视频播放错误: \(String(describing: errorModel.message))")
+        self.playerStatusChaned(to: .error)
+    }
+
+    func onPlayerEvent(_ player: AliPlayer!, eventType: AVPEventType) {
+        var type: MTVideoPlayerStatus = .unload
+        switch eventType {
+            case AVPEventPrepareDone:  // 准备完成
+                self.isPlaying = true
+                break
+            case AVPEventAutoPlayStart:  // 自动播放开始事件
+                self.isPlaying = true
+                type = .autoPlayStart
+                break
+            case AVPEventFirstRenderedStart:  // 首帧显示
+                self.isPlaying = true
+                type = .firstRenderedStart
+                break
+            case AVPEventCompletion:  // 播放完成
+                self.isPlaying = false
+                type = .ended
+                break
+            case AVPEventLoadingStart:  // 缓冲开始
+                type = .loadingStart
+                break
+            case AVPEventLoadingEnd:  // 缓冲完成
+                type = .loadingEnd
+                break
+            case AVPEventSeekEnd:  // 跳转完成
+                self.isPlaying = true
+                type = .seekEnd
+                break
+            case AVPEventLoopingStart:  // 循环播放开始
+                self.isPlaying = true
+                type = .loopingStart
+                break
+            default:
+                break
+        }
+        self.playerStatusChaned(to: type)
+    }
+    
+    //视频当前播放位置回调
+    func onCurrentPositionUpdate(_ player: AliPlayer!, position: Int64) {
+        let progress = Float(position) / Float(self.duration)
+        self.currentPlaingCell?.updateProgress(progress: progress)
+    }
+    
+    //视频缓存位置回调
+    func onBufferedPositionUpdate(_ player: AliPlayer!, position: Int64) {
+        
+    }
+    
+    //获取track信息回调
+    func onTrackReady(_ player: AliPlayer!, info: [AVPTrackInfo]!) {
+//        let mediaInfo = player.getMediaInfo()
+//        if mediaInfo?.thumbnails != nil && mediaInfo?.thumbnails.count > 0 {
+//
+//        }
+    }
+    
+    func onPlayerEvent(_ player: AliPlayer!, eventWithString: AVPEventWithString, description: String!) {
+        if eventWithString == EVENT_PLAYER_CACHE_SUCCESS {
+            print("缓存成功事件")
+        }else if eventWithString == EVENT_PLAYER_CACHE_ERROR {
+            print("缓存失败事件")
+        }
+    }
+    
+    //获取缩略图成功回调
+    func onGetThumbnailSuc(_ positionMs: Int64, fromPos: Int64, toPos: Int64, image: Any!) {
+//        if let thumbnail = image as? UIImage {
+//            delegate?.onGetThumbnailImage(positionMs: Int(positionMs), image: thumbnail)
+//        }
+    }
+}
+
+//MARK: - 播放逻辑处理
+extension MSVideoPlayController {
+    
+    private func createPlayer() -> AliListPlayer? {
+        let player = AliListPlayer.init()!
+        player.preloadCount = 2
+        player.isAutoPlay = true
+        player.delegate = self
+        player.isLoop = true
+        player.scalingMode = AVP_SCALINGMODE_SCALEASPECTFIT
+        player.enableHardwareDecoder = true
+        player.stsPreloadDefinition = "FD"
+        let config = AVPConfig()
+        config.startBufferDuration = 250  //起播缓冲区时长。单位ms
+        config.enableLocalCache = true
+        player.setConfig(config)
+        //本地缓存
+        let cacheConfig = AVPCacheConfig()
+        cacheConfig.enable = true
+        cacheConfig.maxDuration = 100
+        cacheConfig.path = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).last!
+        cacheConfig.maxSizeMB = 200
+        player.setCacheConfig(cacheConfig)
+        return player
+    }
+    
+    private func createPlayView() -> UIView? {
+        let view = UIView()
+        view.backgroundColor = .clear
+        view.frame = UIScreen.main.bounds
+        view.isHidden = true
+        return view
+    }
+    
+    private func playerStatusChaned(to: MTVideoPlayerStatus) {
         self.currentPlaingCell?.playStatusChanged(to: to)
         if to == .autoPlayStart {
             print("***playerStatusChaned : autoPlayStart")
@@ -208,7 +383,7 @@ extension MSVideoPlayController: MSVideoPlayerDelegate {
             print("***playerStatusChaned : loadingEnd")
         }else if to == .firstRenderedStart {
             print("***playerStatusChaned : firstRenderedStart")
-            MSVideoPlayerManager.playView.isHidden = false
+            self.playView?.isHidden = false
         }else if to == .ended {
             print("***playerStatusChaned : ended")
         }else if to == .seekEnd {
@@ -224,23 +399,119 @@ extension MSVideoPlayController: MSVideoPlayerDelegate {
         }
     }
     
-    func playerProgressChanged(player: MSVideoPlayer,currentT: Float,totalT: Float,progress: Float) {
-//        print("currentT: \(currentT),totalT: \(totalT),progress: \(progress)")
-        self.currentPlaingCell?.updateProgress(progress: progress)
+    func addVideoSource(arr: [MSVideoModel]) {
+        //去重
+        for model in arr {
+            if self.playList.contains(where: { $0.video_id == model.video_id}) == false {
+                self.playList.append(model)
+                self.player?.addUrlSource(model.url, uid: model.video_id)
+            }
+        }
+    }
+    
+    func cleanList() {
+        self.player?.clear()
+        self.playList.removeAll()
+        self.currentPlayingIndex = 0
+        self.isPlaying = false
+        self.needToAutoResume = false
+    }
+    
+    func removeSource(model: MSVideoModel) {
+        self.player?.removeSource(model.video_id)
+        if let index = self.playList.firstIndex(where: { $0.video_id == model.video_id}) {
+            self.player?.removeSource(model.video_id)
+            self.playList.remove(at: index)
+        }
+    }
+    
+    func moveToPlay(atIndex: Int) {
+        if atIndex < self.playList.count {
+            self.player?.move(to: self.playList[atIndex].video_id)
+            self.currentPlayingIndex = atIndex
+        }
+    }
+
+    func moveToNext() {
+        if self.currentPlayingIndex + 1 < self.playList.count {
+            self.player?.moveToNext()
+            self.currentPlayingIndex += 1
+        }
+    }
+    
+    func moveToPre() {
+        if self.currentPlayingIndex - 1 >= 0 {
+            self.player?.moveToPre()
+            self.currentPlayingIndex -= 1
+        }
+    }
+    
+    func videoPause() {
+        self.isPlaying = false
+        self.player?.pause()
+    }
+    
+    func videoResume() {
+        self.isPlaying = true
+        self.player?.start()
+    }
+    
+    func videoStop() {
+        self.isPlaying = false
+        self.player?.stop()
+    }
+    
+    func videoDestroy() {
+        self.playView?.removeFromSuperview()
+        self.playView = nil
+        self.player?.destroy()
+        self.player = nil
+    }
+    
+    func videoSeek(progress: Float) {
+        self.player?.seek(toTime: Int64(Float(self.duration) * progress), seekMode: AVP_SEEKMODE_ACCURATE)
+    }
+    
+    
+    func videoInfo() -> String {
+        if let info = self.player?.getCurrentTrack(AVPTRACK_TYPE_VIDEO) {
+            return "duration: \(self.duration/1000)s\n Bitrate: \(String.init(format: "%.1f", Float(info.trackBitrate)/1024/1024))Mbps\n width: \(info.videoWidth) \n height: \(info.videoHeight) \n "
+        }
+        return ""
+    }
+    
+    @objc private func applicationEnterBackground() {
+        if self.isPlaying {
+            self.needToAutoResume = true
+        }else {
+            self.needToAutoResume = false
+        }
+        self.videoPause()
+        self.player?.isAutoPlay = false
+        self.playerStatusChaned(to: .paused)
+    }
+    
+    @objc private func applicationDidBecomeActive() {
+        if self.needToAutoResume {
+            self.videoResume()
+            self.playerStatusChaned(to: .autoPlayStart)
+        }
+        self.player?.isAutoPlay = true
     }
 }
 
+//MARK: - videoCell 的回调事件
 extension MSVideoPlayController: MSVideoListCellDelegate {
     
     func needToSeek(to progress: Float) {
-        MSVideoPlayerManager.videoSeek(progress: progress)
+        self.videoSeek(progress: progress)
     }
     
     func needToPlayOrPause(pause: Bool) {
         if pause {
-            MSVideoPlayerManager.videoPause()
+            self.videoPause()
         }else {
-            MSVideoPlayerManager.videoResume()
+            self.videoResume()
         }
     }
     
@@ -278,8 +549,6 @@ extension MSVideoPlayController {
     func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         if operation == .push {
             return self.pushAnimation
-        }else if operation == .pop {
-            return self.popAnimation
         }
         return nil
     }

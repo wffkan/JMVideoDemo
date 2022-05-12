@@ -229,7 +229,7 @@ class MTVideoListCell: UICollectionViewCell {
         progressIndicator.updateProgess(progress: progress)
     }
     
-    func playStatusChanged(to status: MSVideoPlayerStatus) {
+    func playStatusChanged(to status: MTVideoPlayerStatus) {
 
         self.pauseIcon.isHidden = (status != .paused)
         if status == .loadingStart {
@@ -418,7 +418,7 @@ extension MTVideoListCell: MTVideoContainerDelegate,MTVideoTagViewDelegate {
                 n_progress = max(n_progress, 0)
                 n_progress = min(n_progress, 1)
                 self.progressIndicator.updateProgess(progress: n_progress, animated: false)
-                let duration = Float(MSVideoPlayerManager.duration)
+                let duration = Float(videoModel.duration)
                 self.thumbnailView.update(thumbnail: nil, currentT: Int(duration * n_progress), totalT: Int(duration))
                 
             case .ended:
