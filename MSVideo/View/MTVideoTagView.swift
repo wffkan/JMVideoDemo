@@ -47,20 +47,19 @@ class MTVideoTagView: UIView {
                 let textSize = tags[index].singleLineSizeWithAttributeText(font: item.titleL.font)
                 let tagViewW: CGFloat = textSize.width + 26 + 6
                 let tagViewH: CGFloat = 30
-                item.frame = CGRect(x: preX, y: preY, width: textSize.width + 26 + 6, height: 30)
                 if preX + tagViewW + 8 > UIScreen.width - 20 - 82 {
                     preX = 0
-                    preY = tagViewH + 8
-                }else {
-                    preX += tagViewW + 8
+                    preY += tagViewH + 8
                 }
+                item.frame = CGRect(x: preX, y: preY, width: tagViewW, height: tagViewH)
+                preX += tagViewW + 8
                 if preY > 0 {
                     totalSize = CGSize(width: UIScreen.width - 20 - 82, height: item.bottom)
                 }else {
                     totalSize = CGSize(width: item.right, height: item.bottom)
                 }
             }else {
-                item.isHidden = false
+                item.isHidden = true
             }
         }
     }

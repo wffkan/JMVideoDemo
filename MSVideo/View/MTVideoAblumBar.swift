@@ -37,7 +37,7 @@ class MTVideoAblumBar: UIView {
         addSubview(indicator)
         
         icon.snp.makeConstraints { make in
-            make.left.equalTo(20)
+            make.left.equalToSuperview().offset(20)
             make.width.height.equalTo(24)
             make.centerY.equalToSuperview()
         }
@@ -47,7 +47,8 @@ class MTVideoAblumBar: UIView {
             make.right.equalToSuperview().offset(-60)
         }
         indicator.snp.makeConstraints { make in
-            make.right.equalTo(-20)
+            make.right.equalToSuperview().offset(-20)
+            make.width.height.equalTo(24)
             make.centerY.equalToSuperview()
         }
     }
@@ -59,6 +60,13 @@ class MTVideoAblumBar: UIView {
 }
 
 class MTVideoAblumSubBar: UIView {
+    
+    lazy var container: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.white.withAlphaComponent(0.2)
+        view.layer.cornerRadius = 10
+        return view
+    }()
     
     lazy var icon: UIImageView = {
         let icon = UIImageView()
@@ -79,12 +87,19 @@ class MTVideoAblumSubBar: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = UIColor.white.withAlphaComponent(0.2)
-        layer.cornerRadius = 10
-        addSubview(icon)
-        addSubview(titleView)
-        addSubview(indicator)
+        backgroundColor = .black
+
+        addSubview(container)
+        container.addSubview(icon)
+        container.addSubview(titleView)
+        container.addSubview(indicator)
         
+        container.snp.makeConstraints { make in
+            make.left.equalToSuperview().offset(20)
+            make.right.equalToSuperview().offset(-20)
+            make.height.equalTo(40)
+            make.bottom.equalToSuperview()
+        }
         icon.snp.makeConstraints { make in
             make.left.equalTo(16)
             make.width.height.equalTo(24)

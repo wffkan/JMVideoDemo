@@ -30,7 +30,7 @@ class MTVideoWarningView: UIView {
         addSubview(titleL)
         
         icon.snp.makeConstraints { make in
-            make.left.equalTo(20)
+            make.left.equalToSuperview().offset(20)
             make.width.height.equalTo(12)
             make.centerY.equalToSuperview()
         }

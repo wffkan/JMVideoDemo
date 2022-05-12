@@ -96,6 +96,7 @@ class MTVideoListCell: UICollectionViewCell {
     
     private lazy var commentBtn: UIButton = {
         let btn = UIButton(type: .custom)
+        btn.backgroundColor = .black
         btn.setTitle("发表下您的观点...", for: .normal)
         btn.setTitleColor(.white.withAlphaComponent(0.35), for: .normal)
         btn.setTitleColor(.white.withAlphaComponent(0.35), for: .highlighted)
@@ -221,6 +222,10 @@ class MTVideoListCell: UICollectionViewCell {
         }
     }
     
+    deinit {
+        print("MTVideoListCell dealloc")
+    }
+    
     //MARK: - 加载数据
     func reloadData(model: MSVideoModel,fromType: MTVideoFromType,delegate: MTVideoListCellDelegate) {
         self.videoModel = model
@@ -275,10 +280,7 @@ class MTVideoListCell: UICollectionViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        bgImageView.frame = self.bounds
-        container.frame = self.bounds
-        pauseIcon.frame = CGRect(x: self.bounds.midX - 68, y: self.bounds.midY - 68, width: 136, height: 136)
-        
+
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         topGradientLayer.frame = CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.status_navi_height + 22)
@@ -288,6 +290,16 @@ class MTVideoListCell: UICollectionViewCell {
     
     private func setupLayout() {
 
+        bgImageView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        container.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        pauseIcon.snp.makeConstraints { make in
+            make.width.height.equalTo(136)
+            make.center.equalToSuperview()
+        }
         commentBtn.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
             make.bottom.equalToSuperview().offset(-UIScreen.safeAreaBottomHeight)
@@ -309,9 +321,8 @@ class MTVideoListCell: UICollectionViewCell {
             make.bottom.equalToSuperview().offset(-UIScreen.safeAreaBottomHeight - 50)
         }
         ablumSubBar.snp.makeConstraints { make in
-            make.left.equalTo(20)
-            make.right.equalTo(-20)
-            make.height.equalTo(40)
+            make.left.right.equalToSuperview()
+            make.height.equalTo(50)
             make.bottom.equalTo(-UIScreen.safeAreaBottomHeight)
         }
         thumbnailView.snp.makeConstraints { make in
@@ -333,7 +344,7 @@ class MTVideoListCell: UICollectionViewCell {
             make.height.equalTo(self.tagsView.totalSize.height)
         }
         timeL.snp.makeConstraints { make in
-            make.left.equalTo(20)
+            make.left.equalToSuperview().offset(20)
             make.height.equalTo(17)
             make.bottom.equalTo(tagsView.snp.top).offset(-10)
         }
@@ -550,6 +561,7 @@ extension MTVideoListCell {
             self.descL.alpha = hidden ? 0 : 1
             self.nameL.alpha = hidden ? 0 : 1
             self.qaView.alpha = hidden ? 0 : 1
+            self.tagsView.alpha = hidden ? 0 : 1
             self.ablumSubBar.alpha = hidden ? 0 : 1
             if let vc = self.currentVC() as? MTVideoPlayController {
                 vc.navView.alpha = hidden ? 0 : 1

@@ -374,15 +374,16 @@ extension MTVideoPlayController {
         player.stsPreloadDefinition = "FD"
         let config = AVPConfig()
         config.startBufferDuration = 250  //起播缓冲区时长。单位ms
-        config.enableLocalCache = true
+        config.enableLocalCache = false
         player.setConfig(config)
         //本地缓存
-        let cacheConfig = AVPCacheConfig()
-        cacheConfig.enable = true
-        cacheConfig.maxDuration = 100
-        cacheConfig.path = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).last!
-        cacheConfig.maxSizeMB = 200
-        player.setCacheConfig(cacheConfig)
+//        let cacheConfig = AVPCacheConfig()
+//        cacheConfig.enable = true
+//        cacheConfig.maxDuration = 100
+//        let cachePath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).last! as NSString
+//        cacheConfig.path = cachePath.appendingPathComponent(UUID().uuidString)
+//        cacheConfig.maxSizeMB = 200
+//        player.setCacheConfig(cacheConfig)
         return player
     }
     
