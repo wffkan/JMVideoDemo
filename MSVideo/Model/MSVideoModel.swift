@@ -18,7 +18,7 @@ class MSVideoData: HandyJSON {
 
 class MSVideoModel: HandyJSON {
     
-    var video_id: String = ""
+    var identifer: String = ""
     var fsize: Int = 0
     var putTime: Int = 0
     var name: String = ""
@@ -39,8 +39,6 @@ class MSVideoModel: HandyJSON {
     required init() {}
     
     func mapping(mapper: HelpingMapper) {
-        mapper <<<
-                    self.video_id <-- "hash"
         mapper <<<
                     self.videoType <-- "mimeType"
         mapper <<<

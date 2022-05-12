@@ -36,13 +36,12 @@
 		309486D62813C3B4007D0862 /* UIDevice+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486C82813C3B4007D0862 /* UIDevice+Ext.swift */; };
 		309486D72813C3B4007D0862 /* UIView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486C92813C3B4007D0862 /* UIView+Ext.swift */; };
 		309486DB2813C476007D0862 /* MSVideoUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486DA2813C476007D0862 /* MSVideoUtils.swift */; };
-		309486E52813D3C3007D0862 /* MSVideoPlayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486E42813D3C3007D0862 /* MSVideoPlayController.swift */; };
-		309486E92813D52B007D0862 /* MSVideoListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486E82813D52B007D0862 /* MSVideoListCell.swift */; };
+		309486E52813D3C3007D0862 /* MTVideoPlayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486E42813D3C3007D0862 /* MTVideoPlayController.swift */; };
+		309486E92813D52B007D0862 /* MTVideoListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486E82813D52B007D0862 /* MTVideoListCell.swift */; };
 		309486EC2813D632007D0862 /* MSVideoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486EB2813D632007D0862 /* MSVideoModel.swift */; };
 		309486F02813D75C007D0862 /* CircleTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486EF2813D75C007D0862 /* CircleTextView.swift */; };
 		309486F22813D7D1007D0862 /* MTFocusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486F12813D7D1007D0862 /* MTFocusView.swift */; };
 		309486F42813D801007D0862 /* MusicAlbumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486F32813D801007D0862 /* MusicAlbumView.swift */; };
-		309486F82813E526007D0862 /* MSPlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486F72813E526007D0862 /* MSPlayView.swift */; };
 		3094870028142D86007D0862 /* MSVideoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309486FF28142D86007D0862 /* MSVideoViewModel.swift */; };
 		30948704281585FE007D0862 /* SharePopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30948703281585FE007D0862 /* SharePopView.swift */; };
 		309487062815860A007D0862 /* CommentsPopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309487052815860A007D0862 /* CommentsPopView.swift */; };
@@ -128,13 +127,12 @@
 		309486C82813C3B4007D0862 /* UIDevice+Ext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIDevice+Ext.swift"; sourceTree = "<group>"; };
 		309486C92813C3B4007D0862 /* UIView+Ext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Ext.swift"; sourceTree = "<group>"; };
 		309486DA2813C476007D0862 /* MSVideoUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSVideoUtils.swift; sourceTree = "<group>"; };
-		309486E42813D3C3007D0862 /* MSVideoPlayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSVideoPlayController.swift; sourceTree = "<group>"; };
-		309486E82813D52B007D0862 /* MSVideoListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSVideoListCell.swift; sourceTree = "<group>"; };
+		309486E42813D3C3007D0862 /* MTVideoPlayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTVideoPlayController.swift; sourceTree = "<group>"; };
+		309486E82813D52B007D0862 /* MTVideoListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTVideoListCell.swift; sourceTree = "<group>"; };
 		309486EB2813D632007D0862 /* MSVideoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSVideoModel.swift; sourceTree = "<group>"; };
 		309486EF2813D75C007D0862 /* CircleTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleTextView.swift; sourceTree = "<group>"; };
 		309486F12813D7D1007D0862 /* MTFocusView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MTFocusView.swift; sourceTree = "<group>"; };
 		309486F32813D801007D0862 /* MusicAlbumView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MusicAlbumView.swift; sourceTree = "<group>"; };
-		309486F72813E526007D0862 /* MSPlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPlayView.swift; sourceTree = "<group>"; };
 		309486FF28142D86007D0862 /* MSVideoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSVideoViewModel.swift; sourceTree = "<group>"; };
 		30948703281585FE007D0862 /* SharePopView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharePopView.swift; sourceTree = "<group>"; };
 		309487052815860A007D0862 /* CommentsPopView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentsPopView.swift; sourceTree = "<group>"; };
@@ -329,7 +327,7 @@
 			isa = PBXGroup;
 			children = (
 				64548DBC281913B400708652 /* MSVideoListController.swift */,
-				309486E42813D3C3007D0862 /* MSVideoPlayController.swift */,
+				309486E42813D3C3007D0862 /* MTVideoPlayController.swift */,
 				644A8DB6282B9F4F0040D414 /* MTTestController.swift */,
 				644A8DAE282A6FA60040D414 /* MTVideoAblumVC.swift */,
 				308552F3282AA16C00B4F9B3 /* MTPresentListTableView.swift */,
@@ -341,7 +339,7 @@
 		309486E72813D513007D0862 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				309486E82813D52B007D0862 /* MSVideoListCell.swift */,
+				309486E82813D52B007D0862 /* MTVideoListCell.swift */,
 				64548DC428193AEB00708652 /* MTVideoContainer.swift */,
 				644A8DA2282912630040D414 /* MTVideoRightToolsView.swift */,
 				644A8DA42829F57D0040D414 /* MTVideoAblumBar.swift */,
@@ -351,7 +349,6 @@
 				6480D1B2281BD3A6001826EE /* MTVideoStatusLoadingView.swift */,
 				64548DBE28191FED00708652 /* MTProgressIndicator.swift */,
 				644A8DAC282A5EDB0040D414 /* MTVideoTagView.swift */,
-				309486F72813E526007D0862 /* MSPlayView.swift */,
 				309486EF2813D75C007D0862 /* CircleTextView.swift */,
 				309486F12813D7D1007D0862 /* MTFocusView.swift */,
 				309486F32813D801007D0862 /* MusicAlbumView.swift */,
@@ -598,7 +595,6 @@
 				309486D62813C3B4007D0862 /* UIDevice+Ext.swift in Sources */,
 				30948708281587B7007D0862 /* HoverTextView.swift in Sources */,
 				30948704281585FE007D0862 /* SharePopView.swift in Sources */,
-				309486F82813E526007D0862 /* MSPlayView.swift in Sources */,
 				307F3E64282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.m in Sources */,
 				3094870A281587F6007D0862 /* Notification+.swift in Sources */,
 				644A8DAB282A0D2E0040D414 /* UILabel+Ext.swift in Sources */,
@@ -606,7 +602,7 @@
 				644A8DA52829F57D0040D414 /* MTVideoAblumBar.swift in Sources */,
 				309486F22813D7D1007D0862 /* MTFocusView.swift in Sources */,
 				309486CC2813C3B4007D0862 /* UIImage+Ext.swift in Sources */,
-				309486E52813D3C3007D0862 /* MSVideoPlayController.swift in Sources */,
+				309486E52813D3C3007D0862 /* MTVideoPlayController.swift in Sources */,
 				309486D32813C3B4007D0862 /* MSHelper.swift in Sources */,
 				644A8DB1282A6FD70040D414 /* MTVideoAblumListCell.swift in Sources */,
 				309486D72813C3B4007D0862 /* UIView+Ext.swift in Sources */,
@@ -626,7 +622,7 @@
 				309486D22813C3B4007D0862 /* UIColor+Ext.swift in Sources */,
 				644A8DB7282B9F4F0040D414 /* MTTestController.swift in Sources */,
 				309486CD2813C3B4007D0862 /* Date+Ext.swift in Sources */,
-				309486E92813D52B007D0862 /* MSVideoListCell.swift in Sources */,
+				309486E92813D52B007D0862 /* MTVideoListCell.swift in Sources */,
 				309486CF2813C3B4007D0862 /* UIButton+Ext.swift in Sources */,
 				309486EC2813D632007D0862 /* MSVideoModel.swift in Sources */,
 			);

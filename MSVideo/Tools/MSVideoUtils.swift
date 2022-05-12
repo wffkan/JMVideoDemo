@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import HandyJSON
 
 enum MSVideoPlayMode {
     case MSVideoPlayModeOneLoop // 单个循环
@@ -21,4 +21,13 @@ class MSVideoUtils {
         return fileidArr
     }
     
+    static func testVideos() -> [MSVideoModel] {
+        guard let path = Bundle.main.path(forResource: "video", ofType: "json"),
+              let json = try? String.init(contentsOfFile: path) else { return []}
+        if let models = JSONDeserializer<MSVideoModel>.deserializeModelArrayFrom(json: json, designatedPath: "Items") as? [MSVideoModel] {
+            return models
+        }else {
+            return []
+        }
+    }
 }

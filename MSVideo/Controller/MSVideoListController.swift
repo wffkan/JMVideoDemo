@@ -81,8 +81,12 @@ extension MSVideoListController: UITableViewDataSource,UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
         guard let selectCell = tableView.cellForRow(at: indexPath) as? MSDynamicListCell else {return}
-        let playVC = MSVideoPlayController()
-        playVC.reloadVideos(datas: self.datas, playAtIndex: indexPath.row)
+        let playVC = MTVideoPlayController()
+        //1 .添加视频源
+        playVC.addVideoResource(datas: self.datas)
+        //2.从列表中某一条开始播放
+        playVC.needToPlayAtIndex = indexPath.row
+        //3.自定义转场动画
         playVC.show(fromVC: self, startView: selectCell.coverImageView)
         playVC.resourceViewProvider = {[weak self] index in
             let endCell = self?.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MSDynamicListCell

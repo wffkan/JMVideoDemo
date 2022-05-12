@@ -24,7 +24,13 @@ enum MTVideoPlayerStatus {
     case error // 错误
 }
 
-class MSVideoPlayController: BFBaseViewController {
+enum MTVideoFromType {
+    case list
+    case userCenter
+    case recommentList
+    case ablum
+}
+class MTVideoPlayController: BFBaseViewController {
     
     var resourceViewProvider: ((_ index: Int) -> UIView?)?
     
@@ -54,13 +60,12 @@ class MSVideoPlayController: BFBaseViewController {
         return navView
     }()
     
-    private var datas: [MSVideoModel] = []
-    
     private var currentPlaingCell: MTVideoListCell?
     
     private var currentPlayIndex: Int?
     
-    private var needToPlayAtIndex: Int = 0
+    //默认从第一个视频开始播放
+    var needToPlayAtIndex: Int = 0
     
     // 转场属性
     private let presentScaleAnimation: PresentScaleAnimation = PresentScaleAnimation()
@@ -110,6 +115,8 @@ class MSVideoPlayController: BFBaseViewController {
     
     private var needToAutoResume: Bool = false  //用于记录返回前台时是否要自动恢复播放
     
+    private var fromType: MTVideoFromType = .list
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.fd_prefersNavigationBarHidden = true
@@ -124,6 +131,11 @@ class MSVideoPlayController: BFBaseViewController {
         addNotifications()
     }
     
+    convenience init(fromType: MTVideoFromType) {
+        self.init(nibName: nil, bundle: nil)
+        self.fromType = fromType
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.delegate = self
@@ -134,6 +146,12 @@ class MSVideoPlayController: BFBaseViewController {
         self.needToPlayOrPause(pause: false)
         self.dragInteractiveTransition.dragPushEnable = true
         self.dragInteractiveTransition.dragDismissEnable = true
+        //在视频合集播放页，进入时将合集视频列表弹起
+        if fromType == .ablum {
+            let ablumListVC = MTVideoAblumVC()
+            ablumListVC.modalPresentationStyle = .custom
+            self.present(ablumListVC, animated: true, completion: nil)
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -174,10 +192,14 @@ class MSVideoPlayController: BFBaseViewController {
         fromVC.present(nav, animated: true, completion: nil)
     }
     
-    func reloadVideos(datas: [MSVideoModel],playAtIndex: Int) {
-        self.datas.append(contentsOf: datas)
-        self.needToPlayAtIndex = playAtIndex
-        self.addVideoSource(arr: datas)
+    //添加播放源
+    func addVideoResource(datas: [MSVideoModel]) {
+        for model in datas {
+            self.playList.append(model)
+            let videoID = UUID().uuidString
+            model.identifer = videoID
+            self.player?.addUrlSource(model.url, uid: videoID)
+        }
         collectionView.reloadData()
     }
     
@@ -215,17 +237,16 @@ class MSVideoPlayController: BFBaseViewController {
     }
 }
 
-extension MSVideoPlayController: UICollectionViewDataSource,UICollectionViewDelegate {
+extension MTVideoPlayController: UICollectionViewDataSource,UICollectionViewDelegate {
     
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return datas.count
+        return playList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "videoCell", for: indexPath) as! MTVideoListCell
-        cell.reloadData(model: datas[indexPath.row])
-        cell.delegate = self
+        cell.reloadData(model: playList[indexPath.row],fromType: fromType,delegate: self)
         return cell
     }
 
@@ -259,7 +280,7 @@ extension MSVideoPlayController: UICollectionViewDataSource,UICollectionViewDele
 }
 
 //MARK: - 播放器内部回调
-extension MSVideoPlayController: AVPDelegate {
+extension MTVideoPlayController: AVPDelegate {
     
     func onError(_ player: AliPlayer!, errorModel: AVPErrorModel!) {
         print("视频播放错误: \(String(describing: errorModel.message))")
@@ -340,7 +361,7 @@ extension MSVideoPlayController: AVPDelegate {
 }
 
 //MARK: - 播放逻辑处理
-extension MSVideoPlayController {
+extension MTVideoPlayController {
     
     private func createPlayer() -> AliListPlayer? {
         let player = AliListPlayer.init()!
@@ -399,16 +420,6 @@ extension MSVideoPlayController {
         }
     }
     
-    func addVideoSource(arr: [MSVideoModel]) {
-        //去重
-        for model in arr {
-            if self.playList.contains(where: { $0.video_id == model.video_id}) == false {
-                self.playList.append(model)
-                self.player?.addUrlSource(model.url, uid: model.video_id)
-            }
-        }
-    }
-    
     func cleanList() {
         self.player?.clear()
         self.playList.removeAll()
@@ -418,16 +429,16 @@ extension MSVideoPlayController {
     }
     
     func removeSource(model: MSVideoModel) {
-        self.player?.removeSource(model.video_id)
-        if let index = self.playList.firstIndex(where: { $0.video_id == model.video_id}) {
-            self.player?.removeSource(model.video_id)
+        self.player?.removeSource(model.identifer)
+        if let index = self.playList.firstIndex(where: { $0.identifer == model.identifer}) {
+            self.player?.removeSource(model.identifer)
             self.playList.remove(at: index)
         }
     }
     
     func moveToPlay(atIndex: Int) {
         if atIndex < self.playList.count {
-            self.player?.move(to: self.playList[atIndex].video_id)
+            self.player?.move(to: self.playList[atIndex].identifer)
             self.currentPlayingIndex = atIndex
         }
     }
@@ -501,7 +512,7 @@ extension MSVideoPlayController {
 }
 
 //MARK: - videoCell 的回调事件
-extension MSVideoPlayController: MSVideoListCellDelegate {
+extension MTVideoPlayController: MTVideoListCellDelegate {
     
     func needToSeek(to progress: Float) {
         self.videoSeek(progress: progress)
@@ -518,10 +529,25 @@ extension MSVideoPlayController: MSVideoListCellDelegate {
     func needToStopScroll(stop: Bool) {
         collectionView.isScrollEnabled = !stop
     }
+    
+    //点击视频合集
+    func videoAblumTap(model: MSVideoModel) {
+        let playVC = MTVideoPlayController(fromType: .ablum)
+        playVC.addVideoResource(datas: MSVideoUtils.testVideos())
+        playVC.needToPlayAtIndex = 0
+        self.navigationController?.pushViewController(playVC, animated: true)
+    }
+    
+    //点击视频合集列表
+    func videoAblumList() {
+        let ablumListVC = MTVideoAblumVC()
+        ablumListVC.modalPresentationStyle = .custom
+        self.present(ablumListVC, animated: true, completion: nil)
+    }
 }
 
 //MARK: - present 转场动画
-extension MSVideoPlayController: UIViewControllerTransitioningDelegate {
+extension MTVideoPlayController: UIViewControllerTransitioningDelegate {
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return self.presentScaleAnimation
     }
@@ -536,7 +562,7 @@ extension MSVideoPlayController: UIViewControllerTransitioningDelegate {
 }
 
 //MARK: -push 转场动画
-extension MSVideoPlayController {
+extension MTVideoPlayController {
     
     func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
 

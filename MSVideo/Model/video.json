@@ -1,17 +1,5 @@
 {
 	"Items": [{
-        "key": "shortvideo/e412efbabb080f3c6044c27d22b8868b.mp4",
-        "hash": "e412efbabb080f3c6044c27d22b8868b",
-        "fsize": 2192968,
-        "putTime": 15211042865785417,
-        "mimeType": "video/mp4",
-        "url": "https://outin-188f1cb6cda611ec9ff700163e1a3b4a.oss-cn-shanghai.aliyuncs.com/ab045d44c7cd45629127a601d6fd28a5/fa54d9dd7eb643648ced0d68921ec3a9-e412efbabb080f3c6044c27d22b8868b-ld.mp4?Expires=1651893034&OSSAccessKeyId=LTAIrkwb21KyGjJl&Signature=EzRr2K%2FRbpxUy7eeKhqsmiNzkb4%3D",
-        "coverUrl": "2c6430e9382244c9bb14f7293a3990d5.jpg",
-        "width": 960,
-        "height": 540,
-        "type": 0,
-        "endUser": ""
-    },{
         "key": "shortvideo/JEdwrlASqk1643248800977.mp4",
         "hash": "JEdwrlASqk1643248800977",
         "fsize": 2192968,

@@ -18,21 +18,30 @@ let SHARE_TAP_ACTION:Int = 4000
 let COLLECT_TAP_ACTION:Int = 5000
 let QUESTION_TAP_ACTION:Int = 6000
 let VIDEO_ABLUM_TAP_ACTION:Int = 7000
+let VIDEO_ABLUM_SUB_TAP_ACTION:Int = 8000
 
-protocol MSVideoListCellDelegate: NSObjectProtocol {
+
+protocol MTVideoListCellDelegate: NSObjectProtocol {
     
     func needToPlayOrPause(pause: Bool)
     
     func needToSeek(to progress: Float)
     
     func needToStopScroll(stop: Bool)
+    
+    //点击视频合集
+    func videoAblumTap(model: MSVideoModel)
+    
+    //点击视频合集列表
+    func videoAblumList()
+    
 }
 
 class MTVideoListCell: UICollectionViewCell {
     
     var videoModel: MSVideoModel!
     
-    weak var delegate: MSVideoListCellDelegate?
+    weak var delegate: MTVideoListCellDelegate?
     
     lazy private var container: MTVideoContainer = {
         let view = MTVideoContainer()
@@ -105,6 +114,14 @@ class MTVideoListCell: UICollectionViewCell {
         return view
     }()
     
+    private lazy var ablumSubBar: MTVideoAblumSubBar = {
+        let view = MTVideoAblumSubBar()
+        view.tag = VIDEO_ABLUM_SUB_TAP_ACTION
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleGesture))
+        view.addGestureRecognizer(tap)
+        return view
+    }()
+    
     private lazy var warningView: MTVideoWarningView = MTVideoWarningView()
     
     private lazy var timeL: UILabel = {
@@ -155,6 +172,8 @@ class MTVideoListCell: UICollectionViewCell {
     
     private var relateQaFold: Bool = false  //相关问答折叠状态
     
+    private var fromType: MTVideoFromType!
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .clear
@@ -171,6 +190,7 @@ class MTVideoListCell: UICollectionViewCell {
         container.layer.addSublayer(bottomGradientLayer)
         container.addSubview(pauseIcon)
         
+        container.addSubview(ablumSubBar)
         container.addSubview(ablumBar)
         container.addSubview(commentBtn)
         container.addSubview(rightToolsView)
@@ -202,8 +222,10 @@ class MTVideoListCell: UICollectionViewCell {
     }
     
     //MARK: - 加载数据
-    func reloadData(model: MSVideoModel) {
+    func reloadData(model: MSVideoModel,fromType: MTVideoFromType,delegate: MTVideoListCellDelegate) {
         self.videoModel = model
+        self.fromType = fromType
+        self.delegate = delegate
         rightToolsView.model = model
         if model.coverUrl.hasPrefix("http") {
             let coverUrl = model.coverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
@@ -220,6 +242,18 @@ class MTVideoListCell: UICollectionViewCell {
         self.nameL.text = "@用户id"
         let qaDesc = "你到底吃了几碗的粉，这不欺负老实人这不欺负老实人老实人老实人老实人老实…人老实人老实人老实人老实"
         self.qaView.descL.changeLineSpace(space: 3, text: qaDesc)
+        
+        self.ablumSubBar.titleView.titleL.text = "试管婴儿"
+        self.ablumSubBar.titleView.numL.text = "101集"
+        if fromType == .ablum {
+            self.ablumBar.isHidden = true
+            self.ablumSubBar.isHidden = false
+            self.commentBtn.isHidden = true
+        }else {
+            self.ablumBar.isHidden = false
+            self.ablumSubBar.isHidden = true
+            self.commentBtn.isHidden = false
+        }
     }
     
     func updateProgress(progress: Float) {
@@ -262,17 +296,23 @@ class MTVideoListCell: UICollectionViewCell {
         rightToolsView.snp.makeConstraints { make in
             make.width.equalTo(38)
             make.right.equalToSuperview().offset(-17)
-            make.bottom.equalTo(commentBtn.snp.top).offset(-64)
+            make.bottom.equalToSuperview().offset(-UIScreen.safeAreaBottomHeight - 114)
         }
         progressIndicator.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
             make.height.equalTo(2)
-            make.bottom.equalTo(commentBtn.snp.top)
+            make.bottom.equalToSuperview().offset(-UIScreen.safeAreaBottomHeight - 50)
         }
         ablumBar.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
             make.height.equalTo(44)
-            make.bottom.equalTo(commentBtn.snp.top)
+            make.bottom.equalToSuperview().offset(-UIScreen.safeAreaBottomHeight - 50)
+        }
+        ablumSubBar.snp.makeConstraints { make in
+            make.left.equalTo(20)
+            make.right.equalTo(-20)
+            make.height.equalTo(40)
+            make.bottom.equalTo(-UIScreen.safeAreaBottomHeight)
         }
         thumbnailView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
@@ -283,7 +323,7 @@ class MTVideoListCell: UICollectionViewCell {
             make.left.equalToSuperview()
             make.right.equalToSuperview().offset(-80)
             make.height.equalTo(17)
-            make.bottom.equalTo(commentBtn.snp.top).offset(-64)
+            make.bottom.equalToSuperview().offset(-UIScreen.safeAreaBottomHeight - 50 - 64)
         }
         tagsView.snp.makeConstraints {[weak self] make in
             guard let `self` = self else{return}
@@ -339,6 +379,9 @@ class MTVideoListCell: UICollectionViewCell {
         case VIDEO_ABLUM_TAP_ACTION:
             showVideoAblum()
             break
+        case VIDEO_ABLUM_SUB_TAP_ACTION:
+                showVideoAblumList()
+            break
         default:
             //获取点击坐标，用于设置爱心显示位置
             let point = ges.location(in: container)
@@ -369,9 +412,11 @@ class MTVideoListCell: UICollectionViewCell {
     
     //MARK: - 视频合集
     func showVideoAblum() {
-        let vc = MTVideoAblumVC()
-        vc.modalPresentationStyle = .overFullScreen
-        self.currentVC()?.present(vc, animated: true, completion: nil)
+        delegate?.videoAblumTap(model: self.videoModel)
+    }
+    
+    func showVideoAblumList() {
+        delegate?.videoAblumList()
     }
     
     required init?(coder: NSCoder) {
@@ -505,7 +550,8 @@ extension MTVideoListCell {
             self.descL.alpha = hidden ? 0 : 1
             self.nameL.alpha = hidden ? 0 : 1
             self.qaView.alpha = hidden ? 0 : 1
-            if let vc = self.currentVC() as? MSVideoPlayController {
+            self.ablumSubBar.alpha = hidden ? 0 : 1
+            if let vc = self.currentVC() as? MTVideoPlayController {
                 vc.navView.alpha = hidden ? 0 : 1
             }
         }

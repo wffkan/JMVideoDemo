@@ -9,27 +9,31 @@ import UIKit
 
 class MTVideoAblumVC: BFBaseViewController,UIGestureRecognizerDelegate {
     
-    lazy var containerView: UIView = {
-        let view = UIView(frame: CGRect(x: 0, y: UIScreen.status_navi_height + 115, width: UIScreen.width, height: UIScreen.height - UIScreen.status_navi_height - 115))
-        view.backgroundColor = UIColor(hex: "#262626").withAlphaComponent(0.9)
+    lazy var containerView: UIVisualEffectView = {
+        let view = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        view.frame = CGRect(x: 0, y: UIScreen.status_navi_height + 115, width: UIScreen.width, height: UIScreen.height - UIScreen.status_navi_height - 115)
         return view
     }()
     
     lazy var headerView: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.width, height: 44))
         let closeBtn = UIButton(type: .custom)
-        closeBtn.setImage(UIImage(named: ""), for: .normal)
+        closeBtn.setImage(UIImage(named: "video_ablum_close"), for: .normal)
         closeBtn.frame = CGRect(x: UIScreen.width - 17 - 30, y: 7, width: 30, height: 30)
         closeBtn.addTarget(self, action: #selector(hide), for: .touchUpInside)
         view.addSubview(closeBtn)
+        
+        let line = UIView(bgColor: .black.withAlphaComponent(0.05))
+        line.frame = CGRect(x: 0, y: 44 - 1, width: UIScreen.width, height: 1)
+        view.addSubview(line)
         return view
     }()
     
-    lazy var navTitleL: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .medium)
-        label.textColor = .white
-        return label
+    lazy var navTitleView: MTVideoAblumTitleView = {
+        let view = MTVideoAblumTitleView()
+        view.titleL.text = "试管婴儿合集"
+        view.numL.text = "第1集"
+        return view
     }()
     
     lazy var topMaskView: UIView = {
@@ -62,28 +66,30 @@ class MTVideoAblumVC: BFBaseViewController,UIGestureRecognizerDelegate {
         topMaskView.frame = CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.status_navi_height + 115)
         view.addSubview(topMaskView)
         containerView.addRoundCorners(corners: [.topLeft,.topRight], radii: CGSize(width: 16, height: 16))
-        containerView.addSubview(headerView)
+        containerView.contentView.addSubview(headerView)
         tableView.frame = CGRect(x: 0, y: 44, width: UIScreen.width, height: containerView.height - 44)
-        containerView.addSubview(tableView)
+        containerView.contentView.addSubview(tableView)
 
-        headerView.addSubview(navTitleL)
-        navTitleL.snp.makeConstraints { make in
+        headerView.addSubview(navTitleView)
+        navTitleView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.centerX.equalToSuperview()
-            make.width.equalTo(UIScreen.width - 150)
+            make.width.lessThanOrEqualTo(UIScreen.width - 150)
         }
         let pan = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler))
         pan.delegate = self
-        containerView.addGestureRecognizer(pan)
+        containerView.contentView.addGestureRecognizer(pan)
         
         view.isHidden = true
         let transform = CGAffineTransform(translationX: 0, y: containerView.height)
         containerView.transform = transform
+        
+        self.show()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.show()
+        
     }
     
     @objc func panGestureHandler(pan: UIPanGestureRecognizer) {
@@ -145,7 +151,6 @@ class MTVideoAblumVC: BFBaseViewController,UIGestureRecognizerDelegate {
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: [.curveEaseOut,.allowUserInteraction]) {
             self.containerView.transform = .identity
         } completion: { _ in
-            
         }
 
     }
