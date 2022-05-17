@@ -76,6 +76,8 @@ class MTVideoPlayController: BFBaseViewController {
     
     private let pushAnimation: PushAnimation = PushAnimation()
 
+    private var interactiveTransition: UIPercentDrivenInteractiveTransition?
+    
     // 播放器相关属性
     private var _player: AliListPlayer?
     private var player: AliListPlayer? {
@@ -146,6 +148,7 @@ class MTVideoPlayController: BFBaseViewController {
         self.needToPlayOrPause(pause: false)
         self.dragInteractiveTransition.dragPushEnable = true
         self.dragInteractiveTransition.dragDismissEnable = true
+        self.navigationController?.delegate = self
         //在视频合集播放页，进入时将合集视频列表弹起
         if fromType == .ablum {
             let ablumListVC = MTVideoAblumVC()
@@ -163,6 +166,7 @@ class MTVideoPlayController: BFBaseViewController {
         self.needToPlayOrPause(pause: true)
         self.dragInteractiveTransition.dragPushEnable = false
         self.dragInteractiveTransition.dragDismissEnable = false
+        self.navigationController?.delegate = nil
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -180,13 +184,13 @@ class MTVideoPlayController: BFBaseViewController {
         let nav = BFNavigationController(rootViewController: self)
         nav.transitioningDelegate = self
         nav.modalPresentationStyle = .custom
+        nav.modalPresentationCapturesStatusBarAppearance = true
         let startFrame = startView.superview!.convert(startView.frame, to: nil)
         self.presentScaleAnimation.startFrame = startFrame
         self.presentScaleAnimation.startView = startView
         self.dismissScaleAnimation.endView = startView
         self.dismissScaleAnimation.endFrame = startFrame
-        
-        fromVC.modalPresentationStyle = .custom
+  
         self.dragInteractiveTransition.wireToViewController(vc: nav)
         self.dragInteractiveTransition.pushVCType = MTTestController.self as UIViewController.Type
         fromVC.present(nav, animated: true, completion: nil)
@@ -563,7 +567,7 @@ extension MTVideoPlayController: UIViewControllerTransitioningDelegate {
 }
 
 //MARK: -push 转场动画
-extension MTVideoPlayController {
+extension MTVideoPlayController: UINavigationControllerDelegate {
     
     func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
 
@@ -580,3 +584,4 @@ extension MTVideoPlayController {
         return nil
     }
 }
+

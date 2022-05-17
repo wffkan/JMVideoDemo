@@ -18,9 +18,9 @@ class BFNavigationController: UINavigationController {
         }
         navigationBar.tintColor = UIColor.d_color(light: .darkText, dark: .lightText)
         
-        if self.responds(to: #selector(getter: interactivePopGestureRecognizer)) {
-            self.interactivePopGestureRecognizer?.delegate = self
-        }
+//        if self.responds(to: #selector(getter: interactivePopGestureRecognizer)) {
+//            self.interactivePopGestureRecognizer?.delegate = self
+//        }
     }
     
     override func pushViewController(_ viewController: UIViewController, animated: Bool) {
@@ -41,21 +41,21 @@ class BFNavigationController: UINavigationController {
     }
 }
 
-extension BFNavigationController: UIGestureRecognizerDelegate {
-    
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        if self.viewControllers.count == 1 {
-            return false
-        }
-        return true
-    }
-    
-    //修复有水平方向滚动的ScrollView时边缘返回手势失效的问题
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
-    }
-    
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return gestureRecognizer.isKind(of: UIScreenEdgePanGestureRecognizer.self)
-    }
-}
+//extension BFNavigationController: UIGestureRecognizerDelegate {
+//    
+//    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+//        if self.viewControllers.count == 1 {
+//            return false
+//        }
+//        return true
+//    }
+//    
+//    //修复有水平方向滚动的ScrollView时边缘返回手势失效的问题
+//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+//        return true
+//    }
+//    
+//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+//        return gestureRecognizer.isKind(of: UIScreenEdgePanGestureRecognizer.self)
+//    }
+//}

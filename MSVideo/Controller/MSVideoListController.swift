@@ -28,7 +28,7 @@ class MSVideoListController: BFBaseViewController {
     }()
     
     private var datas: [MSVideoModel] = []
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -52,6 +52,7 @@ class MSVideoListController: BFBaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -99,6 +100,7 @@ extension MSVideoListController: UITableViewDataSource,UITableViewDelegate {
         return model.viewHeight + 30.0
     }
 }
+
 
 class MSDynamicListCell: UITableViewCell {
     
