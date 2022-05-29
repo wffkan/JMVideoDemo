@@ -10,5 +10,7 @@
 
 
 #import "UINavigationController+FDFullscreenPopGesture.h"
+#import "KMCGeigerCounter.h"
+
 
 #endif /* SwiftOC_Header_h */

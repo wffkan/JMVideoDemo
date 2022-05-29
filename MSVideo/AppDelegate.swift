@@ -23,8 +23,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window?.rootViewController = BFTabBarController()
         
-        let fpsL = FPSLabel()
-        window?.addSubview(fpsL)
+//        let fpsL = FPSLabel()
+//        window?.addSubview(fpsL)
+        KMCGeigerCounter.shared().isEnabled = true
         
         return true
     }

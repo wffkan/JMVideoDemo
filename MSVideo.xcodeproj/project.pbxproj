@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3058627E284387C8004DF7AC /* KMCGeigerCounterTick.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 3058627B284387C8004DF7AC /* KMCGeigerCounterTick.aiff */; };
+		3058627F284387C8004DF7AC /* KMCGeigerCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3058627D284387C8004DF7AC /* KMCGeigerCounter.m */; };
 		307F3E64282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.m in Sources */ = {isa = PBXBuildFile; fileRef = 307F3E63282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.m */; };
 		308552EE281AD62B00B4F9B3 /* PresentScaleAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308552ED281AD62B00B4F9B3 /* PresentScaleAnimation.swift */; };
 		308552F0281AD8AE00B4F9B3 /* DismissScaleAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308552EF281AD8AE00B4F9B3 /* DismissScaleAnimation.swift */; };
@@ -92,6 +94,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3058627B284387C8004DF7AC /* KMCGeigerCounterTick.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = KMCGeigerCounterTick.aiff; sourceTree = "<group>"; };
+		3058627C284387C8004DF7AC /* KMCGeigerCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMCGeigerCounter.h; sourceTree = "<group>"; };
+		3058627D284387C8004DF7AC /* KMCGeigerCounter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KMCGeigerCounter.m; sourceTree = "<group>"; };
 		307F3E62282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+FDFullscreenPopGesture.h"; sourceTree = "<group>"; };
 		307F3E63282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+FDFullscreenPopGesture.m"; sourceTree = "<group>"; };
 		307F3E69282C03BF00B57949 /* SwiftOC-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwiftOC-Header.h"; sourceTree = "<group>"; };
@@ -193,6 +198,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3058627A284387C8004DF7AC /* KMCGeigerCounter */ = {
+			isa = PBXGroup;
+			children = (
+				3058627B284387C8004DF7AC /* KMCGeigerCounterTick.aiff */,
+				3058627C284387C8004DF7AC /* KMCGeigerCounter.h */,
+				3058627D284387C8004DF7AC /* KMCGeigerCounter.m */,
+			);
+			path = KMCGeigerCounter;
+			sourceTree = "<group>";
+		};
 		307F3E61282C025E00B57949 /* FDFullscreenPopGesture */ = {
 			isa = PBXGroup;
 			children = (
@@ -317,6 +332,7 @@
 		309486D92813C463007D0862 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				3058627A284387C8004DF7AC /* KMCGeigerCounter */,
 				308552EC281AD61400B4F9B3 /* Transition */,
 				309486DA2813C476007D0862 /* MSVideoUtils.swift */,
 			);
@@ -499,6 +515,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				64548DCD281A3AA600708652 /* JEdwrlASqk1643248800977.png in Resources */,
+				3058627E284387C8004DF7AC /* KMCGeigerCounterTick.aiff in Resources */,
 				64548DCB281A3AA600708652 /* twUwD00Su91642907840405.png in Resources */,
 				64548DCA281A3AA600708652 /* me7pTYYoYT1643190279286.png in Resources */,
 				64548DBB2818E4FC00708652 /* video.json in Resources */,
@@ -621,6 +638,7 @@
 				309487062815860A007D0862 /* CommentsPopView.swift in Sources */,
 				309486D22813C3B4007D0862 /* UIColor+Ext.swift in Sources */,
 				644A8DB7282B9F4F0040D414 /* MTTestController.swift in Sources */,
+				3058627F284387C8004DF7AC /* KMCGeigerCounter.m in Sources */,
 				309486CD2813C3B4007D0862 /* Date+Ext.swift in Sources */,
 				309486E92813D52B007D0862 /* MTVideoListCell.swift in Sources */,
 				309486CF2813C3B4007D0862 /* UIButton+Ext.swift in Sources */,

@@ -14,5 +14,5 @@ target 'MSVideo' do
   pod 'SVProgressHUD'
   
   pod 'AliPlayerSDK_iOS'
-  
+
 end
