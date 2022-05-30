@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
 //        let fpsL = FPSLabel()
 //        window?.addSubview(fpsL)
-        KMCGeigerCounter.shared().isEnabled = true
+//        KMCGeigerCounter.shared().isEnabled = true
         
         return true
     }

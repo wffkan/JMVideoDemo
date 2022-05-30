@@ -79,31 +79,9 @@ class MTVideoPlayController: BFBaseViewController {
     private var interactiveTransition: UIPercentDrivenInteractiveTransition?
     
     // 播放器相关属性
-    private var _player: AliListPlayer?
-    private var player: AliListPlayer? {
-        set {
-           _player = newValue
-        }
-        get {
-            if _player == nil {
-                _player = createPlayer()
-            }
-            return _player
-        }
-    }
+    private var player: AliListPlayer?
     
-    private var _playView: UIView?
-    private var playView: UIView? {
-        set {
-            _playView = newValue
-        }
-        get {
-            if _playView == nil {
-                _playView = createPlayView()
-            }
-            return _playView
-        }
-    }
+    private var playView: UIView?
     
     var duration: Int {
         return Int(self.player?.duration ?? 0)
@@ -136,6 +114,8 @@ class MTVideoPlayController: BFBaseViewController {
     convenience init(fromType: MTVideoFromType) {
         self.init(nibName: nil, bundle: nil)
         self.fromType = fromType
+        self.player = createPlayer()
+        self.playView = createPlayView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -175,9 +155,12 @@ class MTVideoPlayController: BFBaseViewController {
     
     deinit {
         NotificationCenter.default.removeObserver(self)
+        let before = Date().timeIntervalSince1970
         self.videoStop()
         self.cleanList()
         self.videoDestroy()
+        let after = Date().timeIntervalSince1970
+        print("destroy 耗时：\(after - before)")
     }
     
     func show(fromVC: UIViewController,startView: UIView) {
@@ -212,7 +195,6 @@ class MTVideoPlayController: BFBaseViewController {
         self.currentPlaingCell?.updateProgress(progress: 0)
         self.playView?.isHidden = true
         self.playView?.removeFromSuperview()
-        self.playView = nil
         self.currentPlaingCell = nil
 
         self.currentPlaingCell = self.collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? MTVideoListCell

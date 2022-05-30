@@ -82,7 +82,7 @@ extension MSVideoListController: UITableViewDataSource,UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
         guard let selectCell = tableView.cellForRow(at: indexPath) as? MSDynamicListCell else {return}
-        let playVC = MTVideoPlayController()
+        let playVC = MTVideoPlayController(fromType: .list)
         //1 .添加视频源
         playVC.addVideoResource(datas: self.datas)
         //2.从列表中某一条开始播放
