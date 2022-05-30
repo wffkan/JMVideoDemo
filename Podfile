@@ -14,8 +14,6 @@ target 'MSVideo' do
   pod 'SVProgressHUD'
   
   pod 'AliPlayerSDK_iOS'
-  
-  pod 'RxSwift'
-  pod 'RxCocoa'
+
   
 end
