@@ -41,7 +41,7 @@ class FPSLabel: UILabel {
         
         count += 1
         let timeDelta = displayLink.timestamp - lastTime
-        if timeDelta < 0.25 {
+        if timeDelta < 1 {
             return
         }
         
