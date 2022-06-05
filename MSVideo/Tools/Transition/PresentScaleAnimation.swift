@@ -16,29 +16,37 @@ class PresentScaleAnimation: NSObject,UIViewControllerAnimatedTransitioning {
     var startView: UIView?
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return 0.3
+        return 0.25
     }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        let toVC = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to)
+        guard let toVC = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to) else {return}
         if startFrame.equalTo(.zero) {
             transitionContext.completeTransition(true)
             return
         }
         let initialFrame = startFrame
         let containerView = transitionContext.containerView
-        containerView.addSubview(toVC!.view)
-        let finalFrame = transitionContext.finalFrame(for: toVC!)
+        
+        let bgMaskView = UIView(bgColor: .black)
+        bgMaskView.alpha = 0
+        bgMaskView.frame = containerView.bounds
+        containerView.addSubview(bgMaskView)
+        
+        containerView.addSubview(toVC.view)
+        
+        let finalFrame = transitionContext.finalFrame(for: toVC)
         let duration = self.transitionDuration(using: transitionContext)
-        startView?.alpha = 1.0
-        toVC?.view.center = CGPoint(x: initialFrame.origin.x + initialFrame.size.width * 0.5, y: initialFrame.origin.y + initialFrame.size.height * 0.5)
-        toVC?.view.transform = CGAffineTransform(scaleX: initialFrame.size.width / finalFrame.size.width, y: initialFrame.size.height / finalFrame.size.height)
-        UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.5, options: .layoutSubviews) {
-            toVC?.view.center = CGPoint(x: finalFrame.origin.x + finalFrame.size.width * 0.5, y: finalFrame.origin.y + finalFrame.size.height * 0.5)
-            toVC?.view.transform = CGAffineTransform(scaleX: 1, y: 1)
-            self.startView?.alpha = 0.0
+
+        toVC.view.frame = initialFrame
+
+        UIView.animate(withDuration: duration) {
+            toVC.view.frame = finalFrame
+            bgMaskView.alpha = 1.0
         } completion: { _ in
-            transitionContext.completeTransition(true)
+            self.startView?.alpha = 0.0
+            bgMaskView.removeFromSuperview()
+            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
     }
 }

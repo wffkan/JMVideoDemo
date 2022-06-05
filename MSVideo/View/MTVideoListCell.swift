@@ -291,7 +291,8 @@ class MTVideoListCell: UICollectionViewCell {
     private func setupLayout() {
 
         bgImageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.left.right.top.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-UIScreen.safeAreaBottomHeight - 50)
         }
         container.snp.makeConstraints { make in
             make.edges.equalToSuperview()

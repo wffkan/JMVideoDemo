@@ -32,8 +32,6 @@ class DragInteractiveTransition: UIPercentDrivenInteractiveTransition {
     
     private var viewControllerCenter: CGPoint = .zero
     
-    private var transitionMaskLayer: CALayer?
-    
     override var completionSpeed: CGFloat {
         get {
             return 1 - self.percentComplete
@@ -78,16 +76,6 @@ class DragInteractiveTransition: UIPercentDrivenInteractiveTransition {
             case .began:
                 if self.isDismissInteracting || translation.x < abs(translation.y) {return}
 
-                self.transitionMaskLayer = CALayer()
-                self.transitionMaskLayer?.frame = view.frame
-                self.transitionMaskLayer?.isOpaque = false
-                self.transitionMaskLayer?.opacity = 1
-                self.transitionMaskLayer?.backgroundColor = UIColor.white.cgColor
-                self.transitionMaskLayer?.setNeedsDisplay()
-                self.transitionMaskLayer?.displayIfNeeded()
-                self.transitionMaskLayer?.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-                self.transitionMaskLayer?.position = CGPoint(x: view.width * 0.5, y: view.height * 0.5)
-                view.layer.mask = self.transitionMaskLayer
                 view.layer.cornerRadius = 16
                 view.layer.masksToBounds = true
                 
@@ -98,7 +86,7 @@ class DragInteractiveTransition: UIPercentDrivenInteractiveTransition {
                 var progress = translation.x / UIScreen.width
                 progress = CGFloat(fminf(fmaxf(Float(progress), 0.0), 1.0))
                 
-                let ratio = 1.0 - progress * 0.5
+                let ratio = 1.0 - progress * 0.2
                 parentVC?.view.center = CGPoint(x: viewControllerCenter.x + translation.x * ratio, y: viewControllerCenter.y + translation.y * ratio)
                 parentVC?.view.transform = CGAffineTransform(scaleX: ratio, y: ratio)
                 self.update(progress)
@@ -119,8 +107,6 @@ class DragInteractiveTransition: UIPercentDrivenInteractiveTransition {
                     self.finish()
                     self.parentVC?.dismiss(animated: true, completion: nil)
                 }
-                self.transitionMaskLayer?.removeFromSuperlayer()
-                self.transitionMaskLayer = nil
             default:
                 self.isDismissInteracting = false
                 break

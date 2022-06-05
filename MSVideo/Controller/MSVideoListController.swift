@@ -12,6 +12,12 @@ import MJRefresh
 
 class MSVideoListController: BFBaseViewController {
     
+    private lazy var player: MTAutoPlayer = {
+        let player = MTAutoPlayer()
+        player.delegate = self
+        return player
+    }()
+    
     private lazy var tableView: UITableView = {[weak self] in
         let tableView = UITableView(frame: CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height), style: .plain)
         tableView.estimatedRowHeight = 0
@@ -82,25 +88,68 @@ extension MSVideoListController: UITableViewDataSource,UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
         guard let selectCell = tableView.cellForRow(at: indexPath) as? MSDynamicListCell else {return}
+//        let item = datas[indexPath.row]
+//        if player.currentPlayingItem?.id == item.hash {
+//            let playVC = MTVideoPlayController(fromType: .list)
+//            playVC.delegate = self
+//            playVC.firstModel = item
+//            playVC.show(fromVC: self, startView: selectCell.coverImageView,player: player)
+//            player.isMute = false
+//            return
+//        }
+//
+//        player.startPlay(item: MTVideoItem(id: item.hash, url: item.url), view: selectCell.coverImageView, cell: selectCell)
+//        player.isMute = true
         let playVC = MTVideoPlayController(fromType: .list)
-        //1 .添加视频源
-        playVC.addVideoResource(datas: self.datas)
-        //2.从列表中某一条开始播放
+        playVC.player.addVideoResource(datas: MSVideoUtils.testVideos())
+        playVC.delegate = self
         playVC.needToPlayAtIndex = indexPath.row
-        //3.自定义转场动画
         playVC.show(fromVC: self, startView: selectCell.coverImageView)
-        playVC.resourceViewProvider = {[weak self] index in
-            let endCell = self?.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MSDynamicListCell
-            return endCell?.coverImageView
-        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let model = self.datas[indexPath.row]
         return model.viewHeight + 30.0
     }
+    
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if let videoCell = cell as? MSDynamicListCell {
+            let item = datas[indexPath.row]
+            player.cellDidEndDisplay(item: MTVideoItem(id: item.hash, url: item.url), cell: videoCell)
+        }
+    }
 }
 
+extension MSVideoListController: MTVideoPlayControllerDelegate {
+    
+    func playControllerDidDisappear() {
+        if let view = player.currentPlayingView {
+            player.playView?.isHidden = false
+            view.insertSubview(player.playView!, at: 0)
+            player.playView?.frame = view.bounds
+        }
+//        if player.isPlaying == false {
+//            player.delegate = self
+//            player.startPlay(item: player.currentPlayingItem!, view: player.currentPlayingView!, cell: player.currentPlayingCell!)
+//            player.isMute = true
+//        }
+    }
+}
+
+extension MSVideoListController: MTAutoPlayerDelegate {
+    
+    func cellWillPlay(item: MTVideoItem,cell: UIView) {
+        if let videoCell = cell as? MSDynamicListCell {
+            videoCell.playIcon.isHidden = true
+        }
+    }
+    
+    func cellDidEndPlay(item: MTVideoItem,cell: UIView) {
+        if let videoCell = cell as? MSDynamicListCell {
+            videoCell.playIcon.isHidden = false
+        }
+    }
+}
 
 class MSDynamicListCell: UITableViewCell {
     
@@ -111,7 +160,7 @@ class MSDynamicListCell: UITableViewCell {
         return imageView
     }()
     
-    private lazy var playIcon: UIImageView = {
+    lazy var playIcon: UIImageView = {
        let icon = UIImageView()
         icon.image = UIImage(named: "icon_play_pause")
         return icon

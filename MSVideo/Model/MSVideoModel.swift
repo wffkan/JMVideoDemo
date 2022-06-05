@@ -28,6 +28,7 @@ class MSVideoModel: HandyJSON {
     var width: Int = 0
     var height: Int = 0
     var duration: Int = 0
+    var hash: String = ""
     
     var viewHeight: CGFloat {
         if self.width == 0 || self.height == 0 {

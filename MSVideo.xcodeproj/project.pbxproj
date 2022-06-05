@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		3058627E284387C8004DF7AC /* KMCGeigerCounterTick.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 3058627B284387C8004DF7AC /* KMCGeigerCounterTick.aiff */; };
 		3058627F284387C8004DF7AC /* KMCGeigerCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3058627D284387C8004DF7AC /* KMCGeigerCounter.m */; };
+		30586281284A1334004DF7AC /* MTAutoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30586280284A1334004DF7AC /* MTAutoPlayer.swift */; };
+		30586283284B35F5004DF7AC /* MTListPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30586282284B35F5004DF7AC /* MTListPlayer.swift */; };
 		307F3E64282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.m in Sources */ = {isa = PBXBuildFile; fileRef = 307F3E63282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.m */; };
 		308552EE281AD62B00B4F9B3 /* PresentScaleAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308552ED281AD62B00B4F9B3 /* PresentScaleAnimation.swift */; };
 		308552F0281AD8AE00B4F9B3 /* DismissScaleAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308552EF281AD8AE00B4F9B3 /* DismissScaleAnimation.swift */; };
@@ -97,6 +99,8 @@
 		3058627B284387C8004DF7AC /* KMCGeigerCounterTick.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = KMCGeigerCounterTick.aiff; sourceTree = "<group>"; };
 		3058627C284387C8004DF7AC /* KMCGeigerCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMCGeigerCounter.h; sourceTree = "<group>"; };
 		3058627D284387C8004DF7AC /* KMCGeigerCounter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KMCGeigerCounter.m; sourceTree = "<group>"; };
+		30586280284A1334004DF7AC /* MTAutoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTAutoPlayer.swift; sourceTree = "<group>"; };
+		30586282284B35F5004DF7AC /* MTListPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTListPlayer.swift; sourceTree = "<group>"; };
 		307F3E62282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+FDFullscreenPopGesture.h"; sourceTree = "<group>"; };
 		307F3E63282C025E00B57949 /* UINavigationController+FDFullscreenPopGesture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+FDFullscreenPopGesture.m"; sourceTree = "<group>"; };
 		307F3E69282C03BF00B57949 /* SwiftOC-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwiftOC-Header.h"; sourceTree = "<group>"; };
@@ -344,10 +348,12 @@
 			children = (
 				64548DBC281913B400708652 /* MSVideoListController.swift */,
 				309486E42813D3C3007D0862 /* MTVideoPlayController.swift */,
+				30586282284B35F5004DF7AC /* MTListPlayer.swift */,
 				644A8DB6282B9F4F0040D414 /* MTTestController.swift */,
 				644A8DAE282A6FA60040D414 /* MTVideoAblumVC.swift */,
 				308552F3282AA16C00B4F9B3 /* MTPresentListTableView.swift */,
 				644A8DB0282A6FD70040D414 /* MTVideoAblumListCell.swift */,
+				30586280284A1334004DF7AC /* MTAutoPlayer.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -601,6 +607,7 @@
 				644A8DAD282A5EDB0040D414 /* MTVideoTagView.swift in Sources */,
 				309486F02813D75C007D0862 /* CircleTextView.swift in Sources */,
 				64548DBD281913B400708652 /* MSVideoListController.swift in Sources */,
+				30586281284A1334004DF7AC /* MTAutoPlayer.swift in Sources */,
 				644A8DA9282A0AED0040D414 /* MTRelateQestionView.swift in Sources */,
 				309486CE2813C3B4007D0862 /* Bundle+Ext.swift in Sources */,
 				3094870C28158814007D0862 /* NSAttributedString+.swift in Sources */,
@@ -627,6 +634,7 @@
 				6480D1B1281BBC59001826EE /* MSVideoThumbnailView.swift in Sources */,
 				64548DC528193AEB00708652 /* MTVideoContainer.swift in Sources */,
 				309486DB2813C476007D0862 /* MSVideoUtils.swift in Sources */,
+				30586283284B35F5004DF7AC /* MTListPlayer.swift in Sources */,
 				308552F0281AD8AE00B4F9B3 /* DismissScaleAnimation.swift in Sources */,
 				309486D52813C3B4007D0862 /* MSMcros.swift in Sources */,
 				64548DC32819332900708652 /* MSNavigationView.swift in Sources */,

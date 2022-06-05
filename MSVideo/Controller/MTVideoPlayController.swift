@@ -7,22 +7,8 @@
 
 import Foundation
 import UIKit
-import AliyunPlayer
 import AVFoundation
 
-
-enum MTVideoPlayerStatus {
-    case unload // 未加载
-    case firstRenderedStart // 首帧显示
-    case autoPlayStart // 自动播放开始事件
-    case loadingStart // 缓冲开始
-    case loadingEnd // 缓冲结束
-    case paused // 暂停
-    case ended // 播放完成
-    case seekEnd  // 跳转完成
-    case loopingStart  // 循环播放开始
-    case error // 错误
-}
 
 enum MTVideoFromType {
     case list
@@ -30,9 +16,22 @@ enum MTVideoFromType {
     case recommentList
     case ablum
 }
+
+protocol MTVideoPlayControllerDelegate: NSObjectProtocol {
+    
+    func playControllerDidDisappear()
+    
+    func resourceViewProvider(at index: Int) -> UIView?
+}
+
+extension MTVideoPlayControllerDelegate {
+    func playControllerDidDisappear() {}
+    func resourceViewProvider(at index: Int) -> UIView? {return nil}
+}
+
 class MTVideoPlayController: BFBaseViewController {
     
-    var resourceViewProvider: ((_ index: Int) -> UIView?)?
+    weak var delegate: MTVideoPlayControllerDelegate?
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -59,13 +58,20 @@ class MTVideoPlayController: BFBaseViewController {
         navView.rightButton.addTarget(self, action: #selector(navViewRightDidClick), for: .touchUpInside)
         return navView
     }()
-    
-    private var currentPlaingCell: MTVideoListCell?
-    
-    private var currentPlayIndex: Int?
+
+    private var currentPlayingIndex: Int = 0
     
     //默认从第一个视频开始播放
     var needToPlayAtIndex: Int = 0
+    
+    var autoPlayer: MTAutoPlayer?
+    
+    var firstModel: MSVideoModel?
+    
+    lazy var player: MTListPlayer = {
+        let player = MTListPlayer()
+        return player
+    }()
     
     // 转场属性
     private let presentScaleAnimation: PresentScaleAnimation = PresentScaleAnimation()
@@ -78,54 +84,50 @@ class MTVideoPlayController: BFBaseViewController {
 
     private var interactiveTransition: UIPercentDrivenInteractiveTransition?
     
-    // 播放器相关属性
-    private var player: AliListPlayer?
-    
-    private var playView: UIView?
-    
-    var duration: Int {
-        return Int(self.player?.duration ?? 0)
-    }
-    
-    private var playList: [MSVideoModel] = []
-    
-    private(set) var currentPlayingIndex: Int = 0
-    
-    private(set) var isPlaying: Bool = false // 是否正在播放
-    
-    private var needToAutoResume: Bool = false  //用于记录返回前台时是否要自动恢复播放
-    
     private var fromType: MTVideoFromType = .list
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.fd_prefersNavigationBarHidden = true
+        fd_prefersNavigationBarHidden = true
         view.backgroundColor = .black
         view.addSubview(collectionView)
         view.addSubview(navView)
 
-        self.collectionView.setContentOffset(CGPoint(x: 0, y: Int(UIScreen.height) * self.needToPlayAtIndex), animated: true)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.startPlayVideo(index: self.needToPlayAtIndex)
+        if autoPlayer != nil {
+            player.addVideoResource(datas: MSVideoUtils.testVideos())
+            collectionView.reloadData()
+            collectionView.layoutIfNeeded()
+            if let cell = self.collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? MTVideoListCell {
+                autoPlayer?.playView?.frame = cell.bgImageView.bounds
+                cell.bgImageView.insertSubview(autoPlayer!.playView!, at: 0)
+            }
+        }else {
+            player.addVideoResource(datas: MSVideoUtils.testVideos())
+            collectionView.reloadData()
+            collectionView.layoutIfNeeded()
+            currentPlayingIndex = needToPlayAtIndex
+            collectionView.setContentOffset(CGPoint(x: 0, y: Int(UIScreen.height) * self.needToPlayAtIndex), animated: false)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                if let cell = self.collectionView.cellForItem(at: IndexPath(item: self.needToPlayAtIndex, section: 0)) as? MTVideoListCell {
+                    self.player.startPlayVideo(index: self.needToPlayAtIndex, in: cell)
+                }
+            }
         }
-        addNotifications()
     }
     
     convenience init(fromType: MTVideoFromType) {
         self.init(nibName: nil, bundle: nil)
         self.fromType = fromType
-        self.player = createPlayer()
-        self.playView = createPlayView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.delegate = self
+        navigationController?.delegate = self
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.needToPlayOrPause(pause: false)
+//        player.videoResume()
         self.dragInteractiveTransition.dragPushEnable = true
         self.dragInteractiveTransition.dragDismissEnable = true
         self.navigationController?.delegate = self
@@ -143,68 +145,43 @@ class MTVideoPlayController: BFBaseViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.needToPlayOrPause(pause: true)
-        self.dragInteractiveTransition.dragPushEnable = false
-        self.dragInteractiveTransition.dragDismissEnable = false
-        self.navigationController?.delegate = nil
+//        player.videoPause()
+        dragInteractiveTransition.dragPushEnable = false
+        dragInteractiveTransition.dragDismissEnable = false
+        navigationController?.delegate = nil
+    }
+    
+    deinit {
+        delegate?.playControllerDidDisappear()
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
     
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-        let before = Date().timeIntervalSince1970
-        self.videoStop()
-        self.cleanList()
-        self.videoDestroy()
-        let after = Date().timeIntervalSince1970
-        print("destroy 耗时：\(after - before)")
-    }
-    
-    func show(fromVC: UIViewController,startView: UIView) {
+    func show(fromVC: UIViewController,startView: UIView,player: MTAutoPlayer? = nil) {
+        
+        if player != nil {
+            autoPlayer = player
+            autoPlayer?.delegate = self
+            dismissScaleAnimation.playView = autoPlayer?.playView
+        }else {
+            dismissScaleAnimation.playView = player?.playView
+        }
+        
         let nav = BFNavigationController(rootViewController: self)
         nav.transitioningDelegate = self
         nav.modalPresentationStyle = .custom
         nav.modalPresentationCapturesStatusBarAppearance = true
         let startFrame = startView.superview!.convert(startView.frame, to: nil)
-        self.presentScaleAnimation.startFrame = startFrame
-        self.presentScaleAnimation.startView = startView
-        self.dismissScaleAnimation.endView = startView
-        self.dismissScaleAnimation.endFrame = startFrame
-  
-        self.dragInteractiveTransition.wireToViewController(vc: nav)
-        self.dragInteractiveTransition.pushVCType = MTTestController.self as UIViewController.Type
-        fromVC.present(nav, animated: true, completion: nil)
-    }
-    
-    //添加播放源
-    func addVideoResource(datas: [MSVideoModel]) {
-        for model in datas {
-            self.playList.append(model)
-            let videoID = UUID().uuidString
-            model.identifer = videoID
-            self.player?.addUrlSource(model.url, uid: videoID)
-        }
-        collectionView.reloadData()
-    }
-    
-    private func startPlayVideo(index: Int) {
+        presentScaleAnimation.startFrame = startFrame
+        presentScaleAnimation.startView = startView
+        dismissScaleAnimation.endView = startView
+        dismissScaleAnimation.endFrame = startFrame
         
-        self.currentPlaingCell?.updateProgress(progress: 0)
-        self.playView?.isHidden = true
-        self.playView?.removeFromSuperview()
-        self.currentPlaingCell = nil
-
-        self.currentPlaingCell = self.collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? MTVideoListCell
-        // 重新播放
-        if let cell = self.currentPlaingCell {
-            self.currentPlayIndex = index
-            self.player?.playerView = self.playView
-            cell.contentView.insertSubview(self.playView!, aboveSubview: cell.bgImageView)
-            self.moveToPlay(atIndex: index)
-        }
+        dragInteractiveTransition.wireToViewController(vc: nav)
+        dragInteractiveTransition.pushVCType = MTTestController.self as UIViewController.Type
+        fromVC.present(nav, animated: true, completion: nil)
     }
     
     @objc private func navViewLeftDidClick() {
@@ -212,14 +189,9 @@ class MTVideoPlayController: BFBaseViewController {
     }
     
     @objc private func navViewRightDidClick() {
-        let sheetVC = UIAlertController(title: nil, message: self.videoInfo(), preferredStyle: .actionSheet)
+        let sheetVC = UIAlertController(title: nil, message: player.videoInfo(), preferredStyle: .actionSheet)
         sheetVC.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
         self.present(sheetVC, animated: true, completion: nil)
-    }
-    
-    private func addNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationEnterBackground), name: UIApplication.willResignActiveNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
 }
 
@@ -227,12 +199,20 @@ extension MTVideoPlayController: UICollectionViewDataSource,UICollectionViewDele
     
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return playList.count
+        return firstModel != nil ? player.playList.count + 1 : player.playList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "videoCell", for: indexPath) as! MTVideoListCell
-        cell.reloadData(model: playList[indexPath.row],fromType: fromType,delegate: self)
+        if firstModel != nil {
+            if indexPath.row == 0 {
+                cell.reloadData(model: firstModel!,fromType: fromType,delegate: self)
+            }else {
+                cell.reloadData(model: player.playList[indexPath.row - 1],fromType: fromType,delegate: self)
+            }
+        }else {
+            cell.reloadData(model: player.playList[indexPath.row],fromType: fromType,delegate: self)
+        }
         return cell
     }
 
@@ -243,258 +223,49 @@ extension MTVideoPlayController: UICollectionViewDataSource,UICollectionViewDele
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let offsetY = scrollView.contentOffset.y
         let currentIndex = Int(offsetY / UIScreen.height)
-//        print("index: %zd",currentIndex)
-        
-        if self.currentPlayIndex != currentIndex {
-            self.playView?.isHidden = true
-            self.startPlayVideo(index: currentIndex)
-            if let resouceView = self.resourceViewProvider?(currentIndex) {
+
+        if currentPlayingIndex != currentIndex {
+            if let cell = collectionView.cellForItem(at: IndexPath(item: currentIndex, section: 0)) as? MTVideoListCell {
+                currentPlayingIndex = currentIndex
+                if autoPlayer != nil {
+                    if currentIndex == 0 {
+                        player.videoStop()
+                        player.playView?.isHidden = true
+                        autoPlayer?.playView?.isHidden = true
+                        autoPlayer?.player?.move(to: autoPlayer?.currentPlayingItem?.identifier)
+                        autoPlayer?.playView?.frame = cell.bgImageView.bounds
+                        cell.bgImageView.insertSubview(autoPlayer!.playView!, at: 0)
+                    }else {
+                        autoPlayer?.videoStop()
+                        player.startPlayVideo(index: currentIndex - 1, in: cell)
+                    }
+                }else {
+                    player.startPlayVideo(index: currentIndex, in: cell)
+                }
+            }
+            if let resouceView = delegate?.resourceViewProvider(at: currentIndex) {
                 let endFrame = resouceView.superview!.convert(resouceView.frame, to: nil)
                 self.dismissScaleAnimation.endView = resouceView
                 self.dismissScaleAnimation.endView?.alpha = 0
                 self.dismissScaleAnimation.endFrame = endFrame
-            }else {
-                self.dismissScaleAnimation.endFrame = .zero
-                self.dismissScaleAnimation.endView = nil
             }
         }
     }
-    
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        
-    }
 }
 
-//MARK: - 播放器内部回调
-extension MTVideoPlayController: AVPDelegate {
+//MARK: - 列表自动播放器回调
+extension MTVideoPlayController: MTAutoPlayerDelegate {
     
-    func onError(_ player: AliPlayer!, errorModel: AVPErrorModel!) {
-        print("视频播放错误: \(String(describing: errorModel.message))")
-        self.playerStatusChaned(to: .error)
-    }
-
-    func onPlayerEvent(_ player: AliPlayer!, eventType: AVPEventType) {
-        var type: MTVideoPlayerStatus = .unload
-        switch eventType {
-            case AVPEventPrepareDone:  // 准备完成
-                self.isPlaying = true
-                break
-            case AVPEventAutoPlayStart:  // 自动播放开始事件
-                self.isPlaying = true
-                type = .autoPlayStart
-                break
-            case AVPEventFirstRenderedStart:  // 首帧显示
-                self.isPlaying = true
-                type = .firstRenderedStart
-                break
-            case AVPEventCompletion:  // 播放完成
-                self.isPlaying = false
-                type = .ended
-                break
-            case AVPEventLoadingStart:  // 缓冲开始
-                type = .loadingStart
-                break
-            case AVPEventLoadingEnd:  // 缓冲完成
-                type = .loadingEnd
-                break
-            case AVPEventSeekEnd:  // 跳转完成
-                self.isPlaying = true
-                type = .seekEnd
-                break
-            case AVPEventLoopingStart:  // 循环播放开始
-                self.isPlaying = true
-                type = .loopingStart
-                break
-            default:
-                break
-        }
-        self.playerStatusChaned(to: type)
-    }
-    
-    //视频当前播放位置回调
-    func onCurrentPositionUpdate(_ player: AliPlayer!, position: Int64) {
-        let progress = Float(position) / Float(self.duration)
-        self.currentPlaingCell?.updateProgress(progress: progress)
-    }
-    
-    //视频缓存位置回调
-    func onBufferedPositionUpdate(_ player: AliPlayer!, position: Int64) {
-        
-    }
-    
-    //获取track信息回调
-    func onTrackReady(_ player: AliPlayer!, info: [AVPTrackInfo]!) {
-//        let mediaInfo = player.getMediaInfo()
-//        if mediaInfo?.thumbnails != nil && mediaInfo?.thumbnails.count > 0 {
-//
-//        }
-    }
-    
-    func onPlayerEvent(_ player: AliPlayer!, eventWithString: AVPEventWithString, description: String!) {
-        if eventWithString == EVENT_PLAYER_CACHE_SUCCESS {
-            print("缓存成功事件")
-        }else if eventWithString == EVENT_PLAYER_CACHE_ERROR {
-            print("缓存失败事件")
+    func playerProgressChanged(progress: Float) {
+        if let cell = collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? MTVideoListCell {
+            cell.updateProgress(progress: progress)
         }
     }
     
-    //获取缩略图成功回调
-    func onGetThumbnailSuc(_ positionMs: Int64, fromPos: Int64, toPos: Int64, image: Any!) {
-//        if let thumbnail = image as? UIImage {
-//            delegate?.onGetThumbnailImage(positionMs: Int(positionMs), image: thumbnail)
-//        }
-    }
-}
-
-//MARK: - 播放逻辑处理
-extension MTVideoPlayController {
-    
-    private func createPlayer() -> AliListPlayer? {
-        let player = AliListPlayer.init()!
-        player.preloadCount = 2
-        player.isAutoPlay = true
-        player.delegate = self
-        player.isLoop = true
-        player.scalingMode = AVP_SCALINGMODE_SCALEASPECTFIT
-        player.enableHardwareDecoder = true
-        player.stsPreloadDefinition = "FD"
-        let config = AVPConfig()
-        config.startBufferDuration = 250  //起播缓冲区时长。单位ms
-        config.enableLocalCache = false
-        player.setConfig(config)
-        //本地缓存
-//        let cacheConfig = AVPCacheConfig()
-//        cacheConfig.enable = true
-//        cacheConfig.maxDuration = 100
-//        let cachePath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).last! as NSString
-//        cacheConfig.path = cachePath.appendingPathComponent(UUID().uuidString)
-//        cacheConfig.maxSizeMB = 200
-//        player.setCacheConfig(cacheConfig)
-        return player
-    }
-    
-    private func createPlayView() -> UIView? {
-        let view = UIView()
-        view.backgroundColor = .clear
-        view.frame = UIScreen.main.bounds
-        view.isHidden = true
-        return view
-    }
-    
-    private func playerStatusChaned(to: MTVideoPlayerStatus) {
-        self.currentPlaingCell?.playStatusChanged(to: to)
-        if to == .autoPlayStart {
-            print("***playerStatusChaned : autoPlayStart")
-        }else if to == .loadingStart {
-            print("***playerStatusChaned : loadingStart")
-        }else if to == .loadingEnd {
-            print("***playerStatusChaned : loadingEnd")
-        }else if to == .firstRenderedStart {
-            print("***playerStatusChaned : firstRenderedStart")
-            self.playView?.isHidden = false
-        }else if to == .ended {
-            print("***playerStatusChaned : ended")
-        }else if to == .seekEnd {
-            print("***playerStatusChaned : seekEnd")
-        }else if to == .loopingStart {
-            print("***playerStatusChaned : loopingStart")
-        }else if to == .paused {
-            print("***playerStatusChaned : paused")
-        }else if to == .error {
-            print("***playerStatusChaned : error")
-        }else if to == .unload {
-            print("***playerStatusChaned : unload")
+    func playerStatusChaned(status: MTVideoPlayerStatus) {
+        if let cell = collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? MTVideoListCell {
+            cell.playStatusChanged(to: status)
         }
-    }
-    
-    func cleanList() {
-        self.player?.clear()
-        self.playList.removeAll()
-        self.currentPlayingIndex = 0
-        self.isPlaying = false
-        self.needToAutoResume = false
-    }
-    
-    func removeSource(model: MSVideoModel) {
-        self.player?.removeSource(model.identifer)
-        if let index = self.playList.firstIndex(where: { $0.identifer == model.identifer}) {
-            self.player?.removeSource(model.identifer)
-            self.playList.remove(at: index)
-        }
-    }
-    
-    func moveToPlay(atIndex: Int) {
-        if atIndex < self.playList.count {
-            self.player?.move(to: self.playList[atIndex].identifer)
-            self.currentPlayingIndex = atIndex
-        }
-    }
-
-    func moveToNext() {
-        if self.currentPlayingIndex + 1 < self.playList.count {
-            self.player?.moveToNext()
-            self.currentPlayingIndex += 1
-        }
-    }
-    
-    func moveToPre() {
-        if self.currentPlayingIndex - 1 >= 0 {
-            self.player?.moveToPre()
-            self.currentPlayingIndex -= 1
-        }
-    }
-    
-    func videoPause() {
-        self.isPlaying = false
-        self.player?.pause()
-    }
-    
-    func videoResume() {
-        self.isPlaying = true
-        self.player?.start()
-    }
-    
-    func videoStop() {
-        self.isPlaying = false
-        self.player?.stop()
-    }
-    
-    func videoDestroy() {
-        self.playView?.removeFromSuperview()
-        self.playView = nil
-        self.player?.destroy()
-        self.player = nil
-    }
-    
-    func videoSeek(progress: Float) {
-        self.player?.seek(toTime: Int64(Float(self.duration) * progress), seekMode: AVP_SEEKMODE_ACCURATE)
-    }
-    
-    
-    func videoInfo() -> String {
-        if let info = self.player?.getCurrentTrack(AVPTRACK_TYPE_VIDEO) {
-            return "duration: \(self.duration/1000)s\n Bitrate: \(String.init(format: "%.1f", Float(info.trackBitrate)/1024/1024))Mbps\n width: \(info.videoWidth) \n height: \(info.videoHeight) \n "
-        }
-        return ""
-    }
-    
-    @objc private func applicationEnterBackground() {
-        if self.isPlaying {
-            self.needToAutoResume = true
-        }else {
-            self.needToAutoResume = false
-        }
-        self.videoPause()
-        self.player?.isAutoPlay = false
-        self.playerStatusChaned(to: .paused)
-    }
-    
-    @objc private func applicationDidBecomeActive() {
-        if self.needToAutoResume {
-            self.videoResume()
-            self.playerStatusChaned(to: .autoPlayStart)
-        }
-        self.player?.isAutoPlay = true
     }
 }
 
@@ -502,14 +273,18 @@ extension MTVideoPlayController {
 extension MTVideoPlayController: MTVideoListCellDelegate {
     
     func needToSeek(to progress: Float) {
-        self.videoSeek(progress: progress)
+        if currentPlayingIndex == 0 && autoPlayer != nil {
+            autoPlayer?.videoSeek(progress: progress)
+        }else {
+            player.videoSeek(progress: progress)
+        }
     }
     
     func needToPlayOrPause(pause: Bool) {
-        if pause {
-            self.videoPause()
+        if currentPlayingIndex == 0 && autoPlayer != nil {
+            pause ? autoPlayer?.videoPause() : autoPlayer?.videoResume()
         }else {
-            self.videoResume()
+            pause ? player.videoPause() : player.videoResume()
         }
     }
     
@@ -520,7 +295,7 @@ extension MTVideoPlayController: MTVideoListCellDelegate {
     //点击视频合集
     func videoAblumTap(model: MSVideoModel) {
         let playVC = MTVideoPlayController(fromType: .ablum)
-        playVC.addVideoResource(datas: MSVideoUtils.testVideos())
+        playVC.player.addVideoResource(datas: MSVideoUtils.testVideos())
         playVC.needToPlayAtIndex = 0
         self.navigationController?.pushViewController(playVC, animated: true)
     }
