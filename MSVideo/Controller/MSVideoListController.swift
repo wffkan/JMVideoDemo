@@ -87,24 +87,12 @@ extension MSVideoListController: UITableViewDataSource,UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        guard let selectCell = tableView.cellForRow(at: indexPath) as? MSDynamicListCell else {return}
-//        let item = datas[indexPath.row]
-//        if player.currentPlayingItem?.id == item.hash {
-//            let playVC = MTVideoPlayController(fromType: .list)
-//            playVC.delegate = self
-//            playVC.firstModel = item
-//            playVC.show(fromVC: self, startView: selectCell.coverImageView,player: player)
-//            player.isMute = false
-//            return
-//        }
-//
-//        player.startPlay(item: MTVideoItem(id: item.hash, url: item.url), view: selectCell.coverImageView, cell: selectCell)
-//        player.isMute = true
+//        guard let selectCell = tableView.cellForRow(at: indexPath) as? MSDynamicListCell else {return}
+
         let playVC = MTVideoPlayController(fromType: .list)
         playVC.player.addVideoResource(datas: MSVideoUtils.testVideos())
-        playVC.delegate = self
         playVC.needToPlayAtIndex = indexPath.row
-        playVC.show(fromVC: self, startView: selectCell.coverImageView)
+        navigationController?.pushViewController(playVC, animated: true)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -112,43 +100,38 @@ extension MSVideoListController: UITableViewDataSource,UITableViewDelegate {
         return model.viewHeight + 30.0
     }
     
-    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if let videoCell = cell as? MSDynamicListCell {
-            let item = datas[indexPath.row]
-            player.cellDidEndDisplay(item: MTVideoItem(id: item.hash, url: item.url), cell: videoCell)
-        }
-    }
+//    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        if let videoCell = cell as? MSDynamicListCell {
+//            let item = datas[indexPath.row]
+//            player.cellDidEndDisplay(item: MTVideoItem(id: item.hash, url: item.url), cell: videoCell)
+//        }
+//    }
 }
 
-extension MSVideoListController: MTVideoPlayControllerDelegate {
-    
-    func playControllerDidDisappear() {
-        if let view = player.currentPlayingView {
-            player.playView?.isHidden = false
-            view.insertSubview(player.playView!, at: 0)
-            player.playView?.frame = view.bounds
-        }
-//        if player.isPlaying == false {
-//            player.delegate = self
-//            player.startPlay(item: player.currentPlayingItem!, view: player.currentPlayingView!, cell: player.currentPlayingCell!)
-//            player.isMute = true
+//extension MSVideoListController: MTVideoPlayControllerDelegate {
+//
+//    func playControllerDidDisappear() {
+//        if let view = player.currentPlayingView {
+//            player.playView?.isHidden = false
+//            view.insertSubview(player.playView!, at: 0)
+//            player.playView?.frame = view.bounds
 //        }
-    }
-}
+//    }
+//}
 
 extension MSVideoListController: MTAutoPlayerDelegate {
     
-    func cellWillPlay(item: MTVideoItem,cell: UIView) {
-        if let videoCell = cell as? MSDynamicListCell {
-            videoCell.playIcon.isHidden = true
-        }
-    }
-    
-    func cellDidEndPlay(item: MTVideoItem,cell: UIView) {
-        if let videoCell = cell as? MSDynamicListCell {
-            videoCell.playIcon.isHidden = false
-        }
-    }
+//    func cellWillPlay(item: MTVideoItem,cell: UIView) {
+//        if let videoCell = cell as? MSDynamicListCell {
+//            videoCell.playIcon.isHidden = true
+//        }
+//    }
+//    
+//    func cellDidEndPlay(item: MTVideoItem,cell: UIView) {
+//        if let videoCell = cell as? MSDynamicListCell {
+//            videoCell.playIcon.isHidden = false
+//        }
+//    }
 }
 
 class MSDynamicListCell: UITableViewCell {
