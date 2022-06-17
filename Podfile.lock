@@ -1,8 +1,8 @@
 PODS:
   - Alamofire (5.5.0)
-  - AliPlayerSDK_iOS (5.4.6.0):
-    - AliPlayerSDK_iOS/AliPlayerSDK (= 5.4.6.0)
-  - AliPlayerSDK_iOS/AliPlayerSDK (5.4.6.0)
+  - AliPlayerSDK_iOS (5.4.7.0):
+    - AliPlayerSDK_iOS/AliPlayerSDK (= 5.4.7.0)
+  - AliPlayerSDK_iOS/AliPlayerSDK (5.4.7.0)
   - HandyJSON (5.0.2)
   - Kingfisher (7.2.0)
   - MJRefresh (3.7.5)
@@ -35,7 +35,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
-  AliPlayerSDK_iOS: b81416756ef4d4814ecfe1fff0d97a97ee827cbb
+  AliPlayerSDK_iOS: a3a2ddb2296d9f212cdb7db26cce6672091cfb43
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
   Kingfisher: 3ac0b75b155cabc0e544877d1a4deea29feece92
   MJRefresh: fdf5e979eb406a0341468932d1dfc8b7f9fce961

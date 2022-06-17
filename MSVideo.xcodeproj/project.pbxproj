@@ -75,6 +75,8 @@
 		6480D1B1281BBC59001826EE /* MSVideoThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6480D1B0281BBC59001826EE /* MSVideoThumbnailView.swift */; };
 		6480D1B3281BD3A6001826EE /* MTVideoStatusLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6480D1B2281BD3A6001826EE /* MTVideoStatusLoadingView.swift */; };
 		64C5222C282360E300392D09 /* FPSLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C5222B282360E300392D09 /* FPSLabel.swift */; };
+		64CCE05A285C0DBD00979A5A /* TestOneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64CCE059285C0DBD00979A5A /* TestOneController.swift */; };
+		64CCE05C285C116A00979A5A /* TestSecondController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64CCE05B285C116A00979A5A /* TestSecondController.swift */; };
 		90BEA0B28B541E1B763D9E35 /* Pods_MSVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E17A6DDC22C01FF62CE276FB /* Pods_MSVideo.framework */; };
 /* End PBXBuildFile section */
 
@@ -171,6 +173,8 @@
 		6480D1B0281BBC59001826EE /* MSVideoThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSVideoThumbnailView.swift; sourceTree = "<group>"; };
 		6480D1B2281BD3A6001826EE /* MTVideoStatusLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTVideoStatusLoadingView.swift; sourceTree = "<group>"; };
 		64C5222B282360E300392D09 /* FPSLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FPSLabel.swift; sourceTree = "<group>"; };
+		64CCE059285C0DBD00979A5A /* TestOneController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestOneController.swift; sourceTree = "<group>"; };
+		64CCE05B285C116A00979A5A /* TestSecondController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSecondController.swift; sourceTree = "<group>"; };
 		6D7002EF2D67C8A68540EB59 /* Pods-MSVideo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSVideo.debug.xcconfig"; path = "Target Support Files/Pods-MSVideo/Pods-MSVideo.debug.xcconfig"; sourceTree = "<group>"; };
 		B83E504690B7932A04762F3D /* Pods-MSVideo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSVideo.release.xcconfig"; path = "Target Support Files/Pods-MSVideo/Pods-MSVideo.release.xcconfig"; sourceTree = "<group>"; };
 		E17A6DDC22C01FF62CE276FB /* Pods_MSVideo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MSVideo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -354,6 +358,8 @@
 				308552F3282AA16C00B4F9B3 /* MTPresentListTableView.swift */,
 				644A8DB0282A6FD70040D414 /* MTVideoAblumListCell.swift */,
 				30586280284A1334004DF7AC /* MTAutoPlayer.swift */,
+				64CCE059285C0DBD00979A5A /* TestOneController.swift */,
+				64CCE05B285C116A00979A5A /* TestSecondController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -599,6 +605,7 @@
 				64C5222C282360E300392D09 /* FPSLabel.swift in Sources */,
 				308552EE281AD62B00B4F9B3 /* PresentScaleAnimation.swift in Sources */,
 				3094867C2813C001007D0862 /* AppDelegate.swift in Sources */,
+				64CCE05A285C0DBD00979A5A /* TestOneController.swift in Sources */,
 				308552F2281ADAF400B4F9B3 /* DragInteractiveTransition.swift in Sources */,
 				309486D42813C3B4007D0862 /* NSDictionary+Ext.swift in Sources */,
 				309486B72813C2B4007D0862 /* BFTabBarController.swift in Sources */,
@@ -611,6 +618,7 @@
 				644A8DA9282A0AED0040D414 /* MTRelateQestionView.swift in Sources */,
 				309486CE2813C3B4007D0862 /* Bundle+Ext.swift in Sources */,
 				3094870C28158814007D0862 /* NSAttributedString+.swift in Sources */,
+				64CCE05C285C116A00979A5A /* TestSecondController.swift in Sources */,
 				644A8DB3282B65D50040D414 /* PushAnimation.swift in Sources */,
 				309486BB2813C2B4007D0862 /* BFNavigationController.swift in Sources */,
 				6480D1B3281BD3A6001826EE /* MTVideoStatusLoadingView.swift in Sources */,
